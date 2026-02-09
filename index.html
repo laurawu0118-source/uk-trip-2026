@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>旅程手帖 | UK 2026</title>
+    <link rel="manifest" href="data:application/manifest+json,{'name':'旅程手帖','short_name':'旅程','start_url':'.','display':'standalone','background_color':'#F7F3F0','theme_color':'#8E9775'}">
+    <style>
+        :root {
+            --bg: #F7F3F0; /* 日式和紙色 */
+            --card: #FFFFFF;
+            --primary: #8E9775; /* 苔蘚綠 */
+            --accent: #D4A373; /* 木質色 */
+            --text: #333333;
+            --tag-food: #E2968B; /* 鮭魚粉 */
+            --tag-must: #E9C46A; /* 芥末黃 */
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: "PingFang TC", "Noto Sans TC", sans-serif; 
+            background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px;
+        }
+
+        /* 導覽列 */
+        nav {
+            position: sticky; top: 0; background: rgba(247, 243, 240, 0.9);
+            backdrop-filter: blur(10px); z-index: 100; display: flex;
+            justify-content: space-around; padding: 15px 0; border-bottom: 1px solid #E0DCD9;
+        }
+        nav a { text-decoration: none; color: #999; font-size: 0.9rem; font-weight: 500; }
+        nav a.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
+
+        /* 行程容器 */
+        .container { padding: 20px; max-width: 500px; margin: auto; }
+        .day-header { margin: 30px 0 10px; font-size: 1.4rem; font-weight: 300; letter-spacing: 2px; }
+        
+        /* 天氣標籤 */
+        .weather-bar {
+            background: #E8EBE4; border-radius: 8px; padding: 8px 12px;
+            font-size: 0.8rem; margin-bottom: 15px; display: flex; align-items: center;
+        }
+
+        /* 卡片設計 */
+        .card {
+            background: var(--card); border-radius: 16px; padding: 20px;
+            margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            position: relative; border: 1px solid rgba(0,0,0,0.02);
+        }
+        .card-category { font-size: 0.7rem; color: var(--primary); font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .card-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+        
+        /* 標籤 */
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; color: white; margin-right: 5px; margin-bottom: 5px; vertical-align: middle; }
+        .tag-food { background: var(--tag-food); }
+        .tag-must { background: var(--tag-must); }
+        
+        /* 按鈕 */
+        .nav-button {
+            display: flex; align-items: center; justify-content: center;
+            background: var(--primary); color: white; padding: 10px; border-radius: 10px;
+            text-decoration: none; font-size: 0.9rem; margin-top: 15px; gap: 8px;
+        }
+
+        /* 工具區塊 */
+        .toolbox-item { background: #EEEAE5; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+        .budget-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #CCC; }
+
+        /* 隱藏區塊控制 */
+        .page { display: none; }
+        .page.active { display: block; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="#" onclick="showPage('itinerary')" id="nav-itinerary" class="active">每日行程</a>
+    <a href="#" onclick="showPage('toolbox')" id="nav-toolbox">重要資訊</a>
+</nav>
+
+<div id="itinerary" class="page active container">
+    <div class="day-header">DAY 02 Cambridge</div>
+    <div class="weather-bar">☁️ 劍橋：12°C | 降雨 20% | 建議穿著：輕便防風</div>
+    
+    <div class="card">
+        <div class="card-category">Transport</div>
+        <div class="card-title">劍橋車站 ➜ 市中心</div>
+        <p style="font-size: 0.9rem; color: #666;">搭乘公車至聖安德魯街站，體驗古老大學城的開端。</p>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=Cambridge+Station" class="nav-button">🧭 導航至車站</a>
+    </div>
+
+    <div class="card">
+        <div class="card-category">Attraction</div>
+        <div class="card-title">國王學院 & 撐篙 <span class="tag tag-must">🎟️ 需門票</span></div>
+        <p><span class="tag tag-must">必看點</span> <strong>徐志摩紀念石</strong>、禮拜堂扇形拱頂。</p>
+        <p><span class="tag tag-must">攻略</span> 撐篙 Punting 每人 <strong>£20~25</strong> 為合理價，可議價。</p>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=King's+College+Cambridge" class="nav-button">🧭 導航至國王學院</a>
+    </div>
+
+    <div class="card">
+        <div class="card-category">Food</div>
+        <div class="card-title">Fitzbillies <span class="tag tag-food">必吃美食</span></div>
+        <p><span class="tag tag-food">必點菜單</span> <strong>Chelsea Bun (肉桂捲)</strong></p>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=Fitzbillies" class="nav-button">🧭 導航去吃甜點</a>
+    </div>
+
+    <div class="day-header">DAY 03 Bath & Stonehenge</div>
+    <div class="weather-bar">🌧️ 巴斯：10°C | 降雨 65% | 務必攜帶雨具</div>
+
+    <div class="card">
+        <div class="card-category">Attraction</div>
+        <div class="card-title">羅馬浴場 <span class="tag tag-must">🎟️ 需預約</span></div>
+        <p><strong>重要預約代號：<span style="color:red">#BATH-2026-X</span></strong></p>
+        <p><span class="tag tag-must">電影取景</span> 普爾特尼橋（《悲慘世界》賈維自盡處）。</p>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=The+Roman+Baths" class="nav-button">🧭 導航至浴場</a>
+    </div>
+
+    <div class="card">
+        <div class="card-category">Food</div>
+        <div class="card-title">Sally Lunn’s</div>
+        <p><span class="tag tag-food">必吃美食</span> <strong>Sally Lunn Bun (圓麵包)</strong></p>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=Sally+Lunn's+Historic+Eating+House" class="nav-button">🧭 導航去排隊</a>
+    </div>
+</div>
+
+<div id="toolbox" class="page container">
+    <div class="day-header">重要工具箱</div>
+    
+    <h3>✈️ 航班 & 住宿</h3>
+    <div class="toolbox-item">
+        <p><strong>航班：</strong> BR067 TPE - LHR (09:00)</p>
+        <p><strong>住宿：</strong> London Premier Inn (預約碼: 889900)</p>
+    </div>
+
+    <h3>🚨 緊急電話</h3>
+    <div class="toolbox-item">
+        <p>英國緊急求助：<strong>999</strong></p>
+        <p>駐英代表處：<strong>+44 20 7881 2650</strong></p>
+    </div>
+
+    <h3>💰 記帳表</h3>
+    <div class="toolbox-item">
+        <div class="budget-row"><span>總預算</span><span>£ 2,000</span></div>
+        <div class="budget-row"><span>撐篙 Punting</span><span>- £ 25</span></div>
+        <div class="budget-row"><span>羅馬浴場門票</span><span>- £ 27</span></div>
+        <div class="budget-row" style="border-bottom: none; font-weight: bold; margin-top: 10px;"><span>剩餘餘額</span><span>£ 1,948</span></div>
+    </div>
+</div>
+
+<script>
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        document.getElementById('nav-' + pageId).classList.add('active');
+        window.scrollTo(0, 0);
+    }
+</script>
+
+</body>
+</html>
