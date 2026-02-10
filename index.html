@@ -3,191 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cambridge: The Genius Trail</title>
+    <title>Cambridge Master App</title>
     <style>
         :root {
-            --bg: #FDFCFB;
+            --bg: #F7F3F0;
             --card: #FFFFFF;
             --primary: #4A5D4E;
             --accent: #B08D57;
             --text: #2C3E50;
-            --tag-must: #D4AF37;
-            --tag-food: #E67E22;
             --tag-bus: #2980B9;
+            --tag-food: #E67E22;
+            --tag-must: #D4AF37;
         }
 
-        body { font-family: "PingFang TC", "Noto Sans TC", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; line-height: 1.7; }
-        header { text-align: center; padding: 30px 0; border-bottom: 1px solid #EEE; margin-bottom: 25px; }
-        h1 { font-weight: 300; letter-spacing: 5px; font-size: 1.6rem; margin: 0; color: var(--primary); }
-        .sub-header { font-size: 0.8rem; color: #999; margin-top: 10px; }
+        body { font-family: -apple-system, "Noto Sans TC", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 50px; }
+        header { text-align: center; padding: 30px 0; }
+        h1 { font-weight: 300; letter-spacing: 5px; font-size: 1.6rem; margin: 0; }
 
-        .timeline { position: relative; max-width: 600px; margin: auto; }
-        .event { position: relative; padding-left: 35px; margin-bottom: 30px; border-left: 2px solid #E5E7E9; }
-        .dot { position: absolute; left: -7px; top: 5px; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 3px solid white; }
+        /* 時間軸線條 */
+        .timeline { position: relative; max-width: 500px; margin: auto; padding-left: 20px; border-left: 2px solid #EAECEE; }
+
+        /* 卡片與展開邏輯 */
+        .event { position: relative; margin-bottom: 20px; }
+        .time-tag { position: absolute; left: -55px; top: 10px; font-size: 0.75rem; font-weight: bold; color: var(--primary); background: var(--bg); padding: 2px 5px; }
         
-        .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #F0F0F0; }
-        .card-type { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; letter-spacing: 1px; }
-        .card-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; border-bottom: 1px solid #F9F9F9; padding-bottom: 10px; }
+        .card { background: var(--card); border-radius: 12px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-size: 1.1rem; font-weight: 600; margin: 0; }
         
-        .tag { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.7rem; color: white; margin-right: 5px; margin-bottom: 8px; }
-        .tag-must { background: var(--tag-must); }
-        .tag-food { background: var(--tag-food); }
+        /* 隱藏內容預設高度為 0 */
+        .card-body { 
+            max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; 
+            font-size: 0.9rem; line-height: 1.6; color: #555;
+        }
+
+        /* 當卡片被標記為 active 時展開 */
+        .card.active { border: 1px solid var(--accent); }
+        .card.active .card-body { max-height: 2000px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #F0F0F0; }
+
+        .tag-group { margin-top: 8px; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; color: white; margin-right: 5px; }
         .tag-bus { background: var(--tag-bus); }
+        .tag-food { background: var(--tag-food); }
+        .tag-must { background: var(--tag-must); }
 
-        .desc { font-size: 0.95rem; color: #555; margin-bottom: 15px; }
-        .history-box { background: #F8F9F9; padding: 15px; border-radius: 10px; font-size: 0.9rem; margin-top: 10px; border-left: 4px solid var(--accent); }
-        .history-box b { color: var(--primary); }
-        
-        .btn { display: block; background: var(--primary); color: white; text-align: center; padding: 14px; border-radius: 10px; text-decoration: none; margin-top: 12px; font-size: 0.95rem; font-weight: 500; }
-        .btn-outline { background: white; color: var(--primary); border: 1px solid var(--primary); }
-        
-        footer { text-align: center; padding: 40px 0; font-size: 0.8rem; color: #BBB; letter-spacing: 2px; }
+        .btn { display: block; background: var(--primary); color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; margin-top: 15px; font-size: 0.9rem; }
+        .btn-outline { background: white; color: var(--primary); border: 1px solid var(--primary); margin-top: 8px; }
+
+        .history-section { background: #FDFBF7; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid var(--accent); }
+        b { color: var(--primary); }
     </style>
 </head>
 <body>
 
 <header>
     <h1>CAMBRIDGE</h1>
-    <div class="sub-header">2026 深度導覽 | 天才與詩人的足跡</div>
+    <p style="font-size: 0.8rem; color: #999;">Day 2 - 2026 深度導覽</p>
 </header>
 
 <div class="timeline">
 
     <div class="event">
-        <div class="dot"></div>
-        <div class="card">
-            <div class="card-type">Transport | 交通首站</div>
-            <div class="card-title">Universal Bus (U 路線)</div>
-            <span class="tag tag-bus">票價：£2.2 (刷卡感應)</span>
-            <div class="desc">
-                從 **Cambridge Station (Stop 8)** 上車，這台車是專為連結火車站與劍橋大學設計的。
+        <div class="time-tag">09:30</div>
+        <div class="card" onclick="this.classList.toggle('active')">
+            <div class="card-header">
+                <p class="card-title">London King's Cross ➜ Cambridge</p>
+                <span>▼</span>
             </div>
-            <div class="history-box">
-                <b>上車站名：</b>Cambridge Station Stop 8<br>
-                <b>下車站名：</b>Fitzwilliam Museum<br>
-                <b>地圖導航：</b><br>
-                <a href="https://www.google.com/maps/dir/?api=1&destination=Cambridge+Station+Stop+8" style="color:var(--primary)">點擊：前往上車站點</a>
+            <div class="tag-group">
+                <span class="tag tag-bus">Universal Bus U</span>
+            </div>
+            <div class="card-body">
+                <div class="history-section">
+                    <b>交通詳解：</b><br>
+                    抵達 <b>Cambridge Station</b> 後，請前往站外 <b>Stop 8</b> 搭乘 <b>Universal Bus (U 路線)</b>。這是連結火車站與核心校園最順路的公車。<br>
+                    <b>上車站名：</b>Cambridge Station Stop 8<br>
+                    <b>下車站名：</b>Fitzwilliam Museum
+                </div>
+                <a href="https://www.google.com/maps/dir/?api=1&destination=Cambridge+Station+Stop+8" class="btn">🧭 導航至上車站點</a>
             </div>
         </div>
     </div>
 
     <div class="event">
-        <div class="dot"></div>
-        <div class="card">
-            <div class="card-type">Attraction | 藝術與考古</div>
-            <div class="card-title">Fitzwilliam Museum</div>
-            <span class="tag tag-must">門票：免費 (建議預約)</span>
-            <span class="tag tag-must">時間：10:00 - 17:00 (週一休)</span>
-            <div class="desc">
-                劍橋最頂尖的藝術博物館，外觀是雄偉的古典主義建築。
+        <div class="time-tag">10:15</div>
+        <div class="card" onclick="this.classList.toggle('active')">
+            <div class="card-header">
+                <p class="card-title">Fitzwilliam Museum</p>
+                <span>▼</span>
             </div>
-            <div class="history-box">
-                <b>建築與背景：</b><br>
-                建於1816年，內部的<b>大理石大廳 (Entrance Hall)</b> 奢華至極，被公認為英國最美的室內空間之一。
-                這裡藏有莫內、雷諾瓦的畫作，以及古埃及木乃伊與精美的波斯地毯。它是學子們陶冶性情、尋找靈感的聖地。
+            <div class="tag-group">
+                <span class="tag tag-must">免費預約</span>
+                <span class="tag tag-must">必看：大理石大廳</span>
             </div>
-            <a href="https://www.fitzmuseum.cam.ac.uk/visit" class="btn btn-outline">🎟️ 官方預約連結</a>
-            <a href="https://www.google.com/maps/search/?api=1&query=Fitzwilliam+Museum" class="btn">🧭 導航至博物館</a>
+            <div class="card-body">
+                <div class="history-section">
+                    <b>建築歷史：</b><br>
+                    這座博物館建於1816年，是新古典主義建築的傑作。最驚人的是<b>入口大廳 (Founders’ Entrance)</b>，採用多色大理石鑲嵌，天花板金碧輝煌，被譽為全英最美室內。<br><br>
+                    <b>必看點：</b><br>
+                    除了古埃及文物與提香、莫內的名畫，這裡也是劍橋貴族學生學習「鑑賞力」的起源地。
+                </div>
+                <p>💰 門票：免費 (建議官網預約)</p>
+                <a href="https://www.fitzmuseum.cam.ac.uk/visit" class="btn btn-outline">🎟️ 官方預約購票</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Fitzwilliam+Museum" class="btn">🧭 導航至此</a>
+            </div>
         </div>
     </div>
 
     <div class="event">
-        <div class="dot"></div>
-        <div class="card">
-            <div class="card-type">Attraction | 劍橋地標</div>
-            <div class="card-title">King's College (國王學院)</div>
-            <span class="tag tag-must">門票：£15 (預約制)</span>
-            <div class="desc">
-                劍橋最具代表性的學院，由國王亨利六世於1441年建立。
+        <div class="time-tag">11:30</div>
+        <div class="card" onclick="this.classList.toggle('active')">
+            <div class="card-header">
+                <p class="card-title">King's College (國王學院)</p>
+                <span>▼</span>
             </div>
-            <div class="history-box">
-                <b>建築與傳奇：</b><br>
-                必看<b>禮拜堂 (King's College Chapel)</b>，它是「垂直哥德式」建築的巔峰，那個<b>扇形拱頂 (Fan Vault)</b> 是目前世界上最大的石造拱頂，精緻如蕾絲。<br><br>
-                <b>場景與著名人物：</b><br>
-                在學院後方的康河岸邊，有一塊<b>徐志摩紀念石</b>，刻著「輕輕的我走了...」。這裡也是電影<b>《愛的萬物論》</b>中，霍金漫步思考的重要場景。
+            <div class="tag-group">
+                <span class="tag tag-must">門票 £15</span>
+                <span class="tag tag-must">必看：徐志摩紀念石</span>
             </div>
-            <a href="https://www.kings.cam.ac.uk/visit" class="btn btn-outline">🎟️ 官方預約購票</a>
-            <a href="https://www.google.com/maps/search/?api=1&query=King's+College+Cambridge" class="btn">🧭 導航至國王學院</a>
+            <div class="card-body">
+                <div class="history-section">
+                    <b>建築傳奇：</b><br>
+                    由國王亨利六世於1441年下令建造。必看<b>禮拜堂 (King's College Chapel)</b> 的扇形拱頂，這是世界最大石造拱頂，精細程度被建築師形容為「如同天使編織的蕾絲」。<br><br>
+                    <b>歷史與電影：</b><br>
+                    在後花園河邊有<b>徐志摩紀念石</b>。這裡是電影<b>《愛的萬物論》</b>中霍金在康河邊與妻子漫步的重要取景地。
+                </div>
+                <p>⏰ 開放：10:30-15:30</p>
+                <a href="https://www.kings.cam.ac.uk/visit" class="btn btn-outline">🎟️ 官方預約購票</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=King's+College+Cambridge" class="btn">🧭 導航至此</a>
+            </div>
         </div>
     </div>
 
     <div class="event">
-        <div class="dot"></div>
-        <div class="card">
-            <div class="card-type">Food & History | 科學酒吧</div>
-            <div class="card-title">The Eagle (老鷹酒吧)</div>
-            <span class="tag tag-food">必點：Eagle Ale / 炸魚薯條</span>
-            <div class="desc">
-                劍橋歷史最悠久的酒吧之一，也是科學與戰爭的交會點。
+        <div class="time-tag">13:00</div>
+        <div class="card" onclick="this.classList.toggle('active')">
+            <div class="card-header">
+                <p class="card-title">The Eagle (老鷹酒吧)</p>
+                <span>▼</span>
             </div>
-            <div class="history-box">
-                <b>趣聞故事：</b><br>
-                1953年，科學家華生與克里克在此宣佈發現了 <b>DNA 雙螺旋結構</b>，大喊「我們發現了生命的秘密！」<br><br>
-                <b>必看亮點：</b><br>
-                後方的 **RAF Bar** 天花板上，留有二戰時期<b>英國皇家空軍飛行員</b>用打火機燻出的代號與名字。這是一座活生生的歷史檔案館。
+            <div class="tag-group">
+                <span class="tag tag-food">必吃：炸魚薯條</span>
+                <span class="tag tag-must">DNA 發現地</span>
             </div>
-            <a href="https://www.google.com/maps/search/?api=1&query=The+Eagle+Cambridge" class="btn">🧭 導航至酒吧</a>
+            <div class="card-body">
+                <div class="history-section">
+                    <b>科學軼事：</b><br>
+                    1953年，華生與克里克在這邊吃午餐邊研究，隨後在此宣佈發現了 <b>DNA 雙螺旋結構</b>。<br><br>
+                    <b>必看點：RAF Bar</b><br>
+                    酒吧天花板留有二戰時期<b>英國皇家空軍 (RAF)</b> 飛行員用打火機燻出的代號與簽名，是重要的戰爭遺蹟。
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query=The+Eagle+Cambridge" class="btn">🧭 導航至此</a>
+            </div>
         </div>
     </div>
 
     <div class="event">
-        <div class="dot"></div>
-        <div class="card">
-            <div class="card-type">Food | 百年傳奇甜點</div>
-            <div class="card-title">Fitzbillies</div>
-            <span class="tag tag-food">必吃：Chelsea Bun</span>
-            <div class="desc">
-                就在國王學院轉角處，這家甜點店從1920年起就是劍橋的代名詞。
+        <div class="time-tag">14:00</div>
+        <div class="card" onclick="this.classList.toggle('active')">
+            <div class="card-header">
+                <p class="card-title">Fitzbillies 百年甜點</p>
+                <span>▼</span>
             </div>
-            <div class="history-box">
-                <b>美食導覽：</b><br>
-                <b>Chelsea Bun</b> 是他們的靈魂。這款麵包裹滿了黏稠的蜂蜜糖漿、香料與肉桂香氣，口感極度飽滿紮實。建議買一顆，漫步到康河邊享用，這才是最地道的劍橋吃法。
+            <div class="tag-group">
+                <span class="tag tag-food">必吃：Chelsea Bun</span>
             </div>
-            <a href="https://www.google.com/maps/search/?api=1&query=Fitzbillies+Trumpington+St" class="btn">🧭 導航去買肉桂捲</a>
+            <div class="card-body">
+                <div class="history-section">
+                    <b>必吃特色：</b><br>
+                    百年老店，最出名的 <b>Chelsea Bun</b> 裹滿黏稠糖漿與肉桂香，是劍橋最有名的「黏甜點」。建議外帶一份去康河邊吃。
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query=Fitzbillies+Cambridge" class="btn">🧭 導航至此</a>
+            </div>
         </div>
     </div>
 
     <div class="event">
-        <div class="dot"></div>
-        <div class="card">
-            <div class="card-type">Attraction | 天才的家</div>
-            <div class="card-title">Trinity College (三一學院)</div>
-            <span class="tag tag-must">門票：£5 (限外圍/庭院)</span>
-            <div class="desc">
-                這裡是牛頓、培根、拜倫以及無數諾貝爾獎得主的母校。
+        <div class="time-tag">15:00</div>
+        <div class="card" onclick="this.classList.toggle('active')">
+            <div class="card-header">
+                <p class="card-title">Trinity College (三一學院)</p>
+                <span>▼</span>
             </div>
-            <div class="history-box">
-                <b>建築歷史與彩蛋：</b><br>
-                <b>1. 牛頓蘋果樹：</b>在大門右手邊，這棵是牛頓家鄉那棵樹的直系後代。<br>
-                <b>2. 木椅腳：</b>大門上方的亨利八世雕像，右手握的竟然是一根<b>「木椅腳」</b>，這是學生的惡作劇，最後校方幽默地決定保留。<br>
-                <b>著名故事：</b>拜倫當年因為學院禁止養狗，憤而養了一隻熊在寢室，讓校規莫可奈何。
+            <div class="tag-group">
+                <span class="tag tag-must">牛頓蘋果樹</span>
+                <span class="tag tag-must">著名彩蛋</span>
             </div>
-            <a href="https://www.google.com/maps/search/?api=1&query=Trinity+College+Newton+Apple+Tree" class="btn">🧭 導航至蘋果樹</a>
+            <div class="card-body">
+                <div class="history-section">
+                    <b>傳奇故事：</b><br>
+                    這裡是牛頓與拜倫的母校。大門口右邊就是那棵傳說中的<b>蘋果樹</b>。<br><br>
+                    <b>著名彩蛋：</b><br>
+                    門上亨利八世雕像右手拿的是<b>「木椅腳」</b>，是學生惡作劇換掉的。此外，詩人拜倫曾因校規禁止養狗，而在這養了一隻熊來抗議。
+                </div>
+                <p>💰 門票：£5 (限庭院參觀)</p>
+                <a href="https://www.google.com/maps/search/?api=1&query=Trinity+College+Cambridge" class="btn">🧭 導航至此</a>
+            </div>
         </div>
     </div>
 
     <div class="event">
-        <div class="dot"></div>
-        <div class="card">
-            <div class="card-type">Experience | 康河巡禮</div>
-            <div class="card-title">Punting on the Cam (撐篙)</div>
-            <span class="tag tag-must">價格：約 £20-30/人</span>
-            <div class="desc">
-                沒有在康河上撐篙，就不算來過劍橋。
+        <div class="time-tag">16:30</div>
+        <div class="card" onclick="this.classList.toggle('active')">
+            <div class="card-header">
+                <p class="card-title">Punting on the Cam (撐篙)</p>
+                <span>▼</span>
             </div>
-            <div class="history-box">
-                <b>電影與名勝：</b><br>
-                船會穿過<b>嘆息橋 (Bridge of Sighs)</b> 與 <b>數學橋 (Mathematical Bridge)</b>。嘆息橋因學生考試前走過總會發出嘆息而得名。數學橋則傳說由牛頓設計且沒用一根釘子（雖然這只是傳說，但展現了當時對力學的尊崇）。<br>
-                <b>建議：</b>在 **Quayside** 尋找穿背心的學生導覽，故事最精彩。
+            <div class="tag-group">
+                <span class="tag tag-must">必看：嘆息橋</span>
             </div>
-            <a href="https://www.google.com/maps/search/?api=1&query=Quayside+Punting+Cambridge" class="btn">🧭 導航至碼頭</a>
+            <div class="card-body">
+                <div class="history-section">
+                    <b>浪漫巡禮：</b><br>
+                    坐船穿過<b>嘆息橋 (Bridge of Sighs)</b>。傳說這座橋是學生去考場的必經之路，路過時總會嘆氣。另外還會看到全木頭結構、傳說牛頓蓋的<b>數學橋</b>。
+                </div>
+                <p>💰 價格：約 £20-30/人 (建議 Quayside 碼頭上船)</p>
+                <a href="https://www.google.com/maps/search/?api=1&query=Quayside+Cambridge+Punting" class="btn">🧭 導航至碼頭</a>
+            </div>
         </div>
     </div>
 
 </div>
 
 <footer>
-    ~ Journey Through Time | Cambridge 2026 ~
+    ~ End of the Genius Trail ~
 </footer>
 
 </body>
