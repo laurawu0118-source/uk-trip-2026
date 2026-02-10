@@ -6,10 +6,10 @@
     <title>Cambridge: The Genius Path</title>
     <style>
         :root {
-            --bg: #F8F5F2; /* 日式和紙色 */
+            --bg: #F8F5F2;
             --card: #FFFFFF;
-            --primary: #4A5D4E; /* 墨綠 */
-            --accent: #B08D57; /* 枯茶色 */
+            --primary: #4A5D4E;
+            --accent: #B08D57;
             --text-main: #2C3E50;
             --text-sub: #7F8C8D;
             --line: #E5E7E9;
@@ -20,15 +20,13 @@
         h1 { font-weight: 300; letter-spacing: 6px; font-size: 1.5rem; margin: 0; }
         .day-info { font-size: 0.8rem; color: var(--text-sub); margin-top: 10px; letter-spacing: 2px; }
 
-        /* 時間軸線條 */
         .timeline { position: relative; max-width: 500px; margin: 0 auto; padding-left: 30px; }
         .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 1px; background: var(--line); }
 
         .event { position: relative; margin-bottom: 25px; }
         .time-label { position: absolute; left: -30px; top: 5px; font-size: 0.7rem; color: var(--primary); font-weight: bold; background: var(--bg); padding: 2px; }
 
-        /* 卡片設計 */
-        .card { background: var(--card); border-radius: 12px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.3s ease; border: 1px solid transparent; }
+        .card { background: var(--card); border-radius: 12px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid transparent; }
         .card.active { border-color: var(--accent); }
 
         .card-header { display: flex; flex-direction: column; }
@@ -37,19 +35,16 @@
         .quick-info { font-size: 0.8rem; color: var(--text-sub); margin-top: 4px; display: flex; flex-wrap: wrap; gap: 8px; }
         .status-tag { background: #F2F4F4; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; }
 
-        /* 隱藏內容 */
         .card-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; font-size: 0.9rem; }
-        .card.active .card-content { max-height: 2000px; margin-top: 15px; border-top: 1px solid #F0F0F0; padding-top: 15px; }
+        .card.active .card-content { max-height: 3000px; margin-top: 15px; border-top: 1px solid #F0F0F0; padding-top: 15px; }
 
-        /* 場景與歷史 */
-        .story-section { background: #FAF9F6; padding: 15px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid var(--accent); }
-        .story-section b { color: var(--primary); display: block; margin-bottom: 5px; }
+        .story-section { background: #FAF9F6; padding: 15px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid var(--accent); line-height: 1.8; }
+        .story-section b { color: var(--primary); display: block; margin-bottom: 8px; font-size: 1rem; border-bottom: 1px dashed var(--line); padding-bottom: 5px; }
         
-        /* 按鈕組 */
         .btn { display: block; background: var(--primary); color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; margin-top: 10px; font-size: 0.85rem; }
         .btn-web { background: white; color: var(--primary); border: 1px solid var(--primary); }
 
-        footer { text-align: center; padding: 50px 0; color: #BBB; font-size: 0.75rem; letter-spacing: 1px; }
+        footer { text-align: center; padding: 50px 0; color: #BBB; font-size: 0.75rem; }
     </style>
 </head>
 <body>
@@ -68,19 +63,16 @@
                 <span class="type-tag">Transport</span>
                 <p class="title">Universal Bus (U Line)</p>
                 <div class="quick-info">
-                    <span class="status-tag">每 15 分鐘一班</span>
+                    <span class="status-tag">Stop 8 上車</span>
                     <span class="status-tag">票價 £2.2</span>
                 </div>
             </div>
             <div class="card-content">
                 <div class="story-section">
-                    <b>搭乘指引：</b>
-                    這是連結車站與校園最精華路徑的線路。請在火車站外 Stop 8 上車。
+                    <b>移動的智慧連結：</b>
+                    這條 U 路線（Universal）不僅是公車，它是現代劍橋大學城的動脈。公車會穿過新建的西劍橋校區（科學家聚集地）抵達古老的老城中心。在 <b>Fitzwilliam Museum</b> 站下車，你便從 21 世紀瞬間穿越回 19 世紀。
                 </div>
-                <p>📍 <b>上車站：</b>Cambridge Station (Stop 8)</p>
-                <p>📍 <b>下車站：</b>Fitzwilliam Museum</p>
-                <a href="https://www.google.com/maps/search/?api=1&query=Cambridge+Station+Stop+8" class="btn">🧭 導航至上車站點</a>
-                <a href="https://www.google.com/maps/search/?api=1&query=Fitzwilliam+Museum" class="btn btn-web">🧭 導航至下車站點</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Cambridge+Station+Stop+8" class="btn">🧭 導航至上車站點 (Stop 8)</a>
             </div>
         </div>
     </div>
@@ -90,23 +82,23 @@
         <div class="card" onclick="this.classList.toggle('active')">
             <div class="card-header">
                 <span class="type-tag">Attraction</span>
-                <p class="title">The Fitzwilliam Museum</p>
+                <p class="title">Fitzwilliam Museum</p>
                 <div class="quick-info">
-                    <span class="status-tag">🕒 開放：10:00 - 17:00</span>
-                    <span class="status-tag">🎫 門票：免費 (建議預約)</span>
+                    <span class="status-tag">🕒 10:00 - 17:00</span>
+                    <span class="status-tag">🎫 免費</span>
                 </div>
             </div>
             <div class="card-content">
                 <div class="story-section">
-                    <b>建築之美：大理石大廳</b>
-                    內部大廳被譽為全英最華麗室內。其多色大理石鑲嵌與金箔天花板展現了維多利亞時代的巔峰工藝。
+                    <b>維多利亞時代的藝術野心：</b>
+                    這座博物館創立於 1816 年，由 Fitzwilliam 子爵遺贈。其建築設計採用新古典主義，門前的巨大石柱與精緻浮雕彷彿將你帶回古羅馬。<b>最不可錯過的「大理石大廳」</b>，其內部裝修耗費巨資，採用多色稀有大理石鑲嵌，天花板上的金箔裝飾在光線下熠熠生輝，展現了當時大英帝國想要網羅全世界美學精華的野心。
                 </div>
                 <div class="story-section">
-                    <b>歷史與趣聞：</b>
-                    館內藏有 16 世紀的波斯地毯與莫內名畫。它是劍橋大學的「藝術靈魂」。
+                    <b>深度趣聞：</b>
+                    館內不僅有大師莫內的名畫，更藏有著名的《維吉納爾琴書》，那是伊麗莎白時代音樂的靈魂。此外，古埃及區的巨型石棺蓋，其精細的刻工曾讓當時的考古學家為之瘋狂。
                 </div>
-                <a href="https://www.fitzmuseum.cam.ac.uk/visit" class="btn btn-web">🎟️ 官方預約連結</a>
-                <a href="https://www.google.com/maps/search/?api=1&query=Fitzwilliam+Museum" class="btn">🧭 Google Maps 導航</a>
+                <a href="https://www.fitzmuseum.cam.ac.uk/visit" class="btn btn-web">🎟️ 官方預約</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Fitzwilliam+Museum" class="btn">🧭 導航至此</a>
             </div>
         </div>
     </div>
@@ -118,21 +110,21 @@
                 <span class="type-tag">Attraction</span>
                 <p class="title">King's College (國王學院)</p>
                 <div class="quick-info">
-                    <span class="status-tag">🕒 開放：10:30 - 15:30</span>
-                    <span class="status-tag">🎫 門票：£15</span>
+                    <span class="status-tag">🕒 10:30 - 15:30</span>
+                    <span class="status-tag">🎫 £15</span>
                 </div>
             </div>
             <div class="card-content">
                 <div class="story-section">
-                    <b>必看點：徐志摩紀念石</b>
-                    位於學院後方康河邊。刻有《再別康橋》名句。此處亦是電影<b>《愛的萬物論》</b>中霍金漫步的取景地。
+                    <b>玫瑰戰爭遺留的奇蹟：</b>
+                    這座學院由年僅 19 歲的亨利六世於 1441 年創立。禮拜堂建設歷經了玫瑰戰爭的混亂，最終在亨利八世手中完工。這是一座「垂直哥德式」建築的巔峰，那個<b>巨大的扇形拱頂</b>完全由石頭支撐，卻輕盈得如同蕾絲。彩色玻璃窗則是亨利八世為了彰顯權威而留下的 16 世紀原蹟。
                 </div>
                 <div class="story-section">
-                    <b>建築傳奇：扇形拱頂</b>
-                    國王學院禮拜堂擁有世界最大的石造扇形拱頂，精細如蕾絲，由亨利六世至亨利八世歷時百年完工。
+                    <b>徐志摩與《再別康橋》：</b>
+                    學院後方的康河岸邊，靜靜躺著一塊刻有「輕輕的我走了，正如我輕輕的來」的白色大理石。當年徐志摩在劍橋遊學，正是這片風景讓他寫下傳世之作。這裡也是電影<b>《愛的萬物論》</b>中，霍金在晚宴後於庭院與 Jane 表白的取景地，充滿了科學與感性的交織。
                 </div>
-                <a href="https://www.kings.cam.ac.uk/visit" class="btn btn-web">🎟️ 官方網路購票</a>
-                <a href="https://www.google.com/maps/search/?api=1&query=King%27s+College+Cambridge" class="btn">🧭 Google Maps 導航</a>
+                <a href="https://www.kings.cam.ac.uk/visit" class="btn btn-web">🎟️ 預約購票</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=King%27s+College+Cambridge" class="btn">🧭 導航至此</a>
             </div>
         </div>
     </div>
@@ -144,41 +136,20 @@
                 <span class="type-tag">Food & History</span>
                 <p class="title">The Eagle (老鷹酒吧)</p>
                 <div class="quick-info">
-                    <span class="status-tag">🕒 營業：11:00 - 23:00</span>
-                    <span class="status-tag">🍴 推薦：炸魚薯條</span>
+                    <span class="status-tag">🕒 11:00 - 23:00</span>
+                    <span class="status-tag">🍴 炸魚薯條</span>
                 </div>
             </div>
             <div class="card-content">
                 <div class="story-section">
-                    <b>科學傳奇：DNA 發現地</b>
-                    1953 年華生與克里克在此宣布發現 DNA 雙螺旋結構，大喊：「我們發現了生命的秘密！」
+                    <b>生命的密碼與烽火回憶：</b>
+                    這間酒吧創立於 16 世紀，是劍橋歷史最悠久的驛站。1953 年 2 月 28 日，在卡文迪許實驗室工作的<b>華生與克里克</b>衝進這間酒吧，向所有人宣佈：「我們發現了生命的秘密！」——他們剛剛成功推導出 DNA 雙螺旋結構。如今酒吧內仍掛著紀念牌。
                 </div>
                 <div class="story-section">
-                    <b>必看點：RAF Bar 天花板</b>
-                    二戰時英國皇家空軍飞行员用打火機在天花板燻出的代號，保存至今。
+                    <b>空軍酒吧的天花板：</b>
+                    別忘了走到後面的 <b>RAF Bar</b>。二戰時期，年輕的英國皇家空軍飛行員在此飲酒告別，他們用打火機、蠟燭甚至口紅，在天花板上留下了自己的名字、代號與飛機中隊番號，那是戰時青春與死亡的壯烈見證。
                 </div>
-                <a href="https://www.google.com/maps/search/?api=1&query=The+Eagle+Cambridge" class="btn">🧭 Google Maps 導航</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="event">
-        <div class="time-label">14:00</div>
-        <div class="card" onclick="this.classList.toggle('active')">
-            <div class="card-header">
-                <span class="type-tag">Food</span>
-                <p class="title">Fitzbillies 百年甜點</p>
-                <div class="quick-info">
-                    <span class="status-tag">🕒 營業：08:00 - 18:00</span>
-                    <span class="status-tag">🍴 必吃：Chelsea Bun</span>
-                </div>
-            </div>
-            <div class="card-content">
-                <div class="story-section">
-                    <b>美食背景：</b>
-                    自 1920 年開業，Chelsea Bun 裹滿黏稠糖漿與肉桂，是劍橋最有名的「黏甜點」。
-                </div>
-                <a href="https://www.google.com/maps/search/?api=1&query=Fitzbillies+Cambridge" class="btn">🧭 Google Maps 導航</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=The+Eagle+Cambridge" class="btn">🧭 導航至此</a>
             </div>
         </div>
     </div>
@@ -190,18 +161,18 @@
                 <span class="type-tag">Attraction</span>
                 <p class="title">Trinity College (三一學院)</p>
                 <div class="quick-info">
-                    <span class="status-tag">🕒 開放：10:00 - 16:00</span>
-                    <span class="status-tag">🎫 門票：£5</span>
+                    <span class="status-tag">🕒 10:00 - 16:00</span>
+                    <span class="status-tag">🎫 £5</span>
                 </div>
             </div>
             <div class="card-content">
                 <div class="story-section">
-                    <b>科學彩蛋：牛頓蘋果樹</b>
-                    就在大門右側，是牛頓家鄉那棵樹的後代。
+                    <b>天才的搖籃與叛逆靈魂：</b>
+                    這裡是全劍橋產出諾貝爾獎得主最多的學院（34座）。大門口右側的那棵<b>蘋果樹</b>，雖是 1954 年從牛頓故鄉移植過來的「後代」，但它象徵了科學史上的巨大轉折。傳說牛頓在此觀察萬有引力，這棵樹便成為了理性的圖騰。
                 </div>
                 <div class="story-section">
-                    <b>歷史趣聞：木椅腳與熊</b>
-                    大門上的亨利八世雕像右手拿的是學生換掉的木椅腳。詩人拜倫曾因禁止養狗，而在寢室養了一隻熊抗議。
+                    <b>椅腳國王與寢室裡的熊：</b>
+                    劍橋學生以「惡作劇」聞名。正門上亨利八世雕像原本握著金色權杖，被學生偷偷換成了<b>木頭椅腳</b>，校方覺得有趣而保留至今。而詩人<b>拜倫</b>在此就讀時，因校方禁止養狗，他便買了一隻<b>熊</b>養在閣樓寢室，並理直氣壯地說：「規章裡沒說不能養熊。」這種頑皮的智慧與傲氣，正是三一學院的特色。
                 </div>
                 <a href="https://www.google.com/maps/search/?api=1&query=Trinity+College+Apple+Tree" class="btn">🧭 導航至蘋果樹</a>
             </div>
@@ -215,43 +186,23 @@
                 <span class="type-tag">Experience</span>
                 <p class="title">Punting on the Cam (撐篙)</p>
                 <div class="quick-info">
-                    <span class="status-tag">🕒 營業：至日落</span>
-                    <span class="status-tag">💰 價格：£20 - 30</span>
+                    <span class="status-tag">🕒 至日落</span>
+                    <span class="status-tag">💰 £20 - 30</span>
                 </div>
             </div>
             <div class="card-content">
                 <div class="story-section">
-                    <b>必看景點：嘆息橋與數學橋</b>
-                    坐在船上穿過嘆息橋，聽導覽員講述這座連結考場與宿舍的橋樑軼事。
+                    <b>嘆息與數學的交匯：</b>
+                    撐篙穿梭於康河，你會經過兩座名橋。<b>嘆息橋 (Bridge of Sighs)</b> 建於 1831 年，據說是模仿威尼斯嘆息橋，因為它是學生前往考場的必經之路，路過時總會嘆息。另一座<b>數學橋 (Mathematical Bridge)</b> 則更有趣，傳說它是牛頓不使用一顆釘子建成的結構，後來好奇的學生將其拆解後卻拼不回去，最終只能打上螺栓。雖然事實證明它是 1749 年由詹姆斯·埃塞克斯建造，但這個傳說完美契合了劍橋對幾何結構的執著。
                 </div>
                 <a href="https://www.google.com/maps/search/?api=1&query=Scudamore%27s+Punting+Cambridge" class="btn">🧭 導航至碼頭 (Quayside)</a>
             </div>
         </div>
     </div>
 
-    <div class="event">
-        <div class="time-label">Backup</div>
-        <div class="card" onclick="this.classList.toggle('active')" style="border: 1px dashed #CCC; background: #FAF9F6;">
-            <div class="card-header">
-                <span class="type-tag">Rainy Day / 備案</span>
-                <p class="title">The Round Church (圓形教堂)</p>
-                <div class="quick-info">
-                    <span class="status-tag">室內行程</span>
-                </div>
-            </div>
-            <div class="card-content">
-                <div class="story-section">
-                    <b>歷史：</b>建於 1130 年，全英僅存四座圓形教堂之一。適合躲雨並觀看劍橋歷史影片。
-                </div>
-                <a href="https://www.google.com/maps/search/?api=1&query=The+Round+Church+Cambridge" class="btn btn-web">🧭 Google Maps 導航</a>
-            </div>
-        </div>
-    </div>
-
 </div>
 
-<footer onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-    ▲ Back to Top<br>
+<footer>
     - Cambridge Journey 2026 -
 </footer>
 
