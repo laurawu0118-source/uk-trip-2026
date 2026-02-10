@@ -3,148 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cambridge: The Ultimate Path v5</title>
+    <title>Cambridge: Traveler OS v6</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         :root {
             --bg: #F9F7F4; --card: #FFFFFF; --primary: #4A5D4E; --accent: #B08D57;
-            --text-main: #2C3E50; --text-sub: #8E9794; --line: #D5DBDB;
+            --text-main: #2C3E50; --text-sub: #8E9794; --line: #EAE6E1;
         }
 
-        body { font-family: -apple-system, "Noto Sans TC", sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 15px; padding-bottom: 100px; }
+        body { font-family: -apple-system, "Noto Sans TC", sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 15px; padding-bottom: 120px; -webkit-tap-highlight-color: transparent; }
         
-        /* 日式極簡 Header */
-        header { position: sticky; top: 0; z-index: 100; background: rgba(249, 247, 244, 0.9); backdrop-filter: blur(5px); padding: 15px 0; border-bottom: 1px solid #EAE6E1; display: flex; justify-content: space-between; align-items: center; }
-        h1 { font-weight: 300; letter-spacing: 3px; font-size: 1.1rem; margin: 0; color: var(--primary); }
-        .mode-btn { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; }
+        /* 極簡 Header & 模式控制 */
+        header { position: sticky; top: 0; z-index: 1000; background: rgba(249, 247, 244, 0.9); backdrop-filter: blur(10px); padding: 15px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+        h1 { font-weight: 300; letter-spacing: 3px; font-size: 1rem; margin: 0; color: var(--primary); }
+        .mode-btn { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; box-shadow: 0 4px 10px rgba(74,93,78,0.2); }
         .mode-btn.unlocked { background: #E74C3C; }
 
-        /* 嵌入地圖 */
-        .map-container { width: 100%; height: 250px; background: #EEE; border-radius: 12px; margin-top: 15px; overflow: hidden; border: 1px solid var(--line); }
-        iframe { width: 100%; height: 100%; border: none; }
+        /* 動態地圖區域 */
+        .map-section { width: 100%; height: 220px; background: #EEE; border-radius: 12px; margin-top: 15px; overflow: hidden; position: relative; border: 1px solid var(--line); }
+        .map-section iframe { width: 100%; height: 100%; border: none; }
+        .map-overlay-label { position: absolute; bottom: 10px; right: 10px; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; color: var(--primary); font-weight: bold; }
 
-        /* 時間軸 */
-        .timeline { position: relative; max-width: 600px; margin: 25px auto; padding-left: 45px; }
-        .timeline::before { content: ''; position: absolute; left: 15px; top: 0; bottom: 0; width: 1.5px; background: var(--line); }
+        /* 時間軸與卡片 */
+        .timeline { position: relative; max-width: 600px; margin: 20px auto; padding-left: 40px; }
+        .timeline::before { content: ''; position: absolute; left: 14px; top: 0; bottom: 0; width: 1px; background: var(--line); }
 
-        .event { position: relative; margin-bottom: 15px; transition: transform 0.2s; }
-        .time-label { position: absolute; left: -50px; top: 12px; font-size: 0.7rem; font-weight: bold; color: var(--primary); background: var(--bg); padding: 2px; z-index: 5; cursor: grab; }
+        .event { position: relative; margin-bottom: 15px; }
+        .drag-handle { position: absolute; left: -40px; width: 30px; height: 100%; display: flex; align-items: flex-start; justify-content: center; padding-top: 10px; cursor: grab; opacity: 0; pointer-events: none; transition: 0.3s; color: var(--accent); font-size: 1.2rem; }
+        body.editing-mode .drag-handle { opacity: 1; pointer-events: auto; }
+
+        .time-tag { position: absolute; left: -40px; top: 12px; font-size: 0.65rem; font-weight: bold; color: var(--primary); background: var(--bg); transition: 0.3s; }
+        body.editing-mode .time-tag { opacity: 0; }
+
+        .card { background: var(--card); border-radius: 12px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid transparent; transition: 0.3s; }
+        .card.active { border-color: var(--accent); }
         
-        .card { background: var(--card); border-radius: 14px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid transparent; }
+        .type-tag { font-size: 0.6rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        .title { font-size: 1.05rem; font-weight: 600; margin: 4px 0; color: var(--primary); line-height: 1.3; }
+        
+        /* 景點免點開資訊 */
+        .meta-grid { display: grid; grid-template-columns: 1fr; gap: 4px; margin-top: 6px; font-size: 0.8rem; color: var(--text-main); }
+        .meta-item { display: flex; align-items: center; gap: 5px; }
+        .meta-item b { color: var(--accent); font-size: 0.75rem; }
+
+        /* 內容展開區 */
+        .card-content { display: none; margin-top: 15px; border-top: 1px solid #F5F5F5; padding-top: 15px; font-size: 0.9rem; line-height: 1.7; }
         .card.active .card-content { display: block; }
-        .card-content { display: none; margin-top: 15px; border-top: 1px solid #F0F0F0; padding-top: 15px; font-size: 0.92rem; }
 
-        .type-tag { font-size: 0.6rem; font-weight: bold; color: var(--accent); text-transform: uppercase; }
-        .title { font-size: 1.05rem; font-weight: 600; margin: 4px 0; color: var(--primary); }
+        /* 歷史導讀風格 */
+        .history-box { background: #FAF9F6; padding: 12px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid var(--accent); }
+        .history-box b { display: block; margin-bottom: 5px; color: var(--primary); font-size: 0.95rem; border-bottom: 1px solid #EEE; padding-bottom: 3px; }
+        .history-box ul { margin: 5px 0; padding-left: 18px; color: #555; }
+
+        /* 功能按鈕 */
+        .nav-link { display: block; background: var(--primary); color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; margin-top: 12px; font-size: 0.8rem; font-weight: 600; }
         
-        /* 景點/餐廳必備透明資訊 */
-        .open-info { font-size: 0.8rem; color: var(--text-main); font-weight: 500; margin-top: 5px; display: block; }
-        .price-tag { display: inline-block; background: #F2F4F4; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; color: #5D6D7E; margin-right: 5px; }
+        /* 編輯模式 UI */
+        [contenteditable="true"] { outline: none; transition: 0.2s; }
+        body.editing-mode [contenteditable="true"] { background: #FFFDE7; border-bottom: 1px dashed var(--accent); }
+        .edit-controls { display: none; margin-top: 15px; gap: 10px; }
+        body.editing-mode .edit-controls { display: flex; }
+        .delete-btn { background: #FADBD8; color: #E74C3C; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; }
 
-        /* 深度導讀樣式 */
-        .story-section { background: #FAF9F6; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid var(--accent); line-height: 1.7; }
-        .story-section b { color: var(--primary); display: block; margin-bottom: 5px; border-bottom: 1px dashed var(--line); }
+        /* 新增行程選單 */
+        .add-section { display: none; margin-top: 20px; padding: 15px; border: 1px dashed var(--accent); border-radius: 12px; }
+        body.editing-mode .add-section { display: block; }
+        .add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .add-type-btn { background: white; border: 1px solid var(--line); padding: 10px; border-radius: 8px; font-size: 0.75rem; color: var(--primary); }
 
-        /* 編輯模式限制 */
-        .read-only [contenteditable="true"] { pointer-events: none; }
-        .editing-mode [contenteditable="true"] { border-bottom: 1px dashed var(--accent); }
-
-        .nav-btn { display: block; background: var(--primary); color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; margin-top: 10px; font-size: 0.85rem; }
-        
-        /* 新增功能按鈕 */
-        .add-btn { width: 100%; padding: 15px; border: 2px dashed var(--line); background: none; color: var(--text-sub); border-radius: 12px; margin-top: 20px; font-size: 0.9rem; }
-
-        footer { text-align: center; padding: 20px 0; color: #BBB; font-size: 0.7rem; }
+        .sortable-ghost { opacity: 0.3; background: var(--accent); }
     </style>
 </head>
 <body class="read-only">
 
 <header>
-    <h1 id="app-title">CAMBRIDGE v5</h1>
-    <button class="mode-btn" onclick="toggleMode()">🔒 鎖定模式</button>
+    <h1 contenteditable="true" id="itinerary-name">CAMBRIDGE TRAVELER OS v6</h1>
+    <button class="mode-btn" onclick="toggleMode()" id="lock-btn">🔒 鎖定中</button>
 </header>
 
-<div class="map-container">
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39163.60533311685!2d0.0910166!3d52.205337!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d87040460f975d%3A0x74fc7a561110052d!2sCambridge!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk"></iframe>
+<div class="map-section" id="map-box">
+    <iframe id="main-map" src=""></iframe>
+    <div class="map-overlay-label">全日行程路線圖</div>
 </div>
 
 <div class="timeline" id="itinerary-list">
     </div>
 
-<button class="add-btn" id="add-new-btn" style="display:none;" onclick="addNewItem()">➕ 新增行程項目</button>
+<div class="add-section">
+    <p style="text-align:center; font-size:0.8rem; color:var(--accent); margin-bottom:10px;">➕ 新增行程分類</p>
+    <div class="add-grid">
+        <button class="add-type-btn" onclick="addNewItem('Attraction')">🏛️ Attraction</button>
+        <button class="add-type-btn" onclick="addNewItem('Food')">🍴 Food</button>
+        <button class="add-type-btn" onclick="addNewItem('Transport')">🚌 Transport</button>
+        <button class="add-type-btn" onclick="addNewItem('Experience')">🛶 Experience</button>
+    </div>
+</div>
 
-<footer>- Cambridge Professional Guide 2026 -</footer>
+<footer>- TRAVELER SMART GUIDE 2026 -</footer>
 
 <script>
 let isEditing = false;
 const defaultData = [
     {
         time: "09:30", type: "Transport", title: "LONDON KING'S CROSS ➜ CAMBRIDGE STATION",
-        open: "首班車 05:00", price: "往返約 £20-40",
-        story: "<b>倫敦出發細節：</b>務必從 LONDON KING'S CROSS 出發（快車僅需 48 分鐘）。抵達後在火車站外 Stop 8 搭乘 Universal Bus (U 路線)。下車站為 Fitzwilliam Museum。這是一條串聯劍橋最精華科學與人文區的動脈。",
-        map: "https://www.google.com/maps/dir/London+King's+Cross/Cambridge+Station"
+        open: "首班車 05:00", price: "往返約 £20-40 (快車48分)",
+        story: "<div class='history-box'><b>交通細節導覽</b><ul><li>火車：務必確認為直達快車，減少停站時間。</li><li>公車：火車站外 Stop 8 搭乘 Universal Bus (U 路線)。</li><li>下車站：Fitzwilliam Museum。</li></ul></div>",
+        map: "Cambridge+Station"
     },
     {
-        time: "10:15", type: "Attraction", title: "Fitzwilliam Museum",
-        open: "🕒 開放：10:00 - 17:00", price: "🎫 門票：免費 (週一休)",
-        story: "<b>維多利亞時代的宮殿：</b>此博物館被稱為『大英博物館的縮影』。入口處的『大理石大廳』是全英最華麗的室內空間。必看點：古埃及木乃伊展廳與莫內的《楊樹》系列畫作。建築本身的新古典主義風格極其宏偉。",
-        map: "https://www.google.com/maps/search/?api=1&query=Fitzwilliam+Museum"
+        time: "10:15", type: "Attraction", title: "聖體鐘 (Corpus Clock)",
+        open: "🕒 24小時展示", price: "🎫 免費 (街邊景點)",
+        story: "<div class='history-box'><b>設計背景與寓意</b><ul><li>由物理學家史蒂芬·霍金於 2008 年揭幕。</li><li>鐘頂蚱蜢：名為「時間吞吃者」(Chronophage)，象徵時間被吞噬。</li><li>獨特技術：24K鍍金不鏽鋼盤，無指針，透過LED顯示時間。</li><li>拉丁銘文：『這世界和其上的情慾都要過去』，提醒珍惜當下。</li></ul></div>",
+        map: "Corpus+Clock"
     },
     {
         time: "11:30", type: "Attraction", title: "King's College (國王學院)",
-        open: "🕒 開放：10:30 - 15:30", price: "🎫 門票：£15 (需預訂)",
-        story: "<b>史詩級建築與徐志摩：</b>這座學院由亨利六世創立。其禮拜堂擁有世界上最大的『扇形拱頂』，精細度如石頭蕾絲。必做：尋找康河邊的『徐志摩紀念石』。電影《愛的萬物論》中霍金與 Jane 在這裡的草地展現了科學家的浪漫。",
-        map: "https://www.google.com/maps/search/?api=1&query=King's+College+Cambridge"
+        open: "🕒 10:30 - 15:30", price: "🎫 £15 (強烈建議網上先訂)",
+        story: "<div class='history-box'><b>建築風格：垂直哥德式巔峰</b><ul><li>世界最大扇形拱頂：如石頭編織的蕾絲。</li><li>徐志摩紀念石：位於後方康河畔，刻有《再別康橋》。</li><li>電影取景：電影《愛的萬物論》霍金晚宴重要場景。</li></ul></div>",
+        map: "King's+College+Cambridge"
     },
     {
         time: "13:00", type: "Food", title: "The Eagle (老鷹酒吧)",
-        open: "🕒 營業：11:00 - 23:00", price: "🍴 推薦：炸魚薯條",
-        story: "<b>DNA 發現地與二戰幽魂：</b>1953年華生與克里克在此宣佈發現生命秘密。後方的 RAF Bar 天花板刻滿了二戰時期英國皇家空軍飛行員的名字，是用打火機燻上去的。這裡每一口啤酒都帶著歷史的味道。",
-        map: "https://www.google.com/maps/search/?api=1&query=The+Eagle+Cambridge"
-    },
-    {
-        time: "14:00", type: "Food", title: "Fitzbillies 百年肉桂捲",
-        open: "🕒 營業：08:00 - 18:00", price: "🍴 必吃：Chelsea Bun",
-        story: "<b>劍橋最有名的糖份補給：</b>自1920年開業，招牌 Chelsea Bun 裹滿肉桂與黏稠糖漿。導遊秘訣：外帶一份到康河邊吃，小心天鵝搶奪！這家老店曾因戰爭短暫歇業，如今是劍橋人的精神寄託。",
-        map: "https://www.google.com/maps/search/?api=1&query=Fitzbillies+Cambridge"
-    },
-    {
-        time: "15:00", type: "Attraction", title: "Trinity College (三一學院)",
-        open: "🕒 開放：10:00 - 16:00", price: "🎫 門票：£5",
-        story: "<b>牛頓蘋果樹與拜倫的熊：</b>門口右側就是那棵傳奇蘋果樹。大門亨利八世右手拿的是『木椅腳』。詩人拜倫在此就讀時，因不滿禁止養狗，便養了一隻熊抗議。這裡是全世界諾貝爾獎密度最高的一塊土地。",
-        map: "https://www.google.com/maps/search/?api=1&query=Trinity+College+Cambridge"
-    },
-    {
-        time: "16:30", type: "Experience", title: "康河撐篙 (Punting)",
-        open: "🕒 營業：至日落", price: "💰 £20-35 (可現場喊價)",
-        story: "<b>穿梭數學橋與嘆息橋：</b>從 Quayside 碼頭上船。嘆息橋因學生赴考場嘆息而得名；數學橋則傳說由牛頓不使用釘子建成（實為精密的木製對稱結構）。這是在手機上拍出劍橋最美倒影的時刻。",
-        map: "https://www.google.com/maps/search/?api=1&query=Cambridge+Punting+Quayside"
+        open: "🕒 11:00 - 23:00", price: "🍴 推薦：炸魚薯條、Eagle Ale",
+        story: "<div class='history-box'><b>科學與烽火的交會點</b><ul><li>DNA 發現地：1953年華生與克里克在此宣佈發現生命秘密。</li><li>RAF Bar：天花板滿是二戰飛行員用打火機燻出的簽名。</li></ul></div>",
+        map: "The+Eagle+Cambridge"
     }
 ];
 
-// 初始化
-function loadData() {
-    const saved = localStorage.getItem('cambridge_v5_data');
+// 初始化加載
+function init() {
+    const saved = localStorage.getItem('cambridge_v6_final');
     const data = saved ? JSON.parse(saved) : defaultData;
+    render(data);
+    updateMap();
+}
+
+function render(data) {
     const container = document.getElementById('itinerary-list');
     container.innerHTML = '';
-    
-    data.forEach((item, index) => {
+    data.forEach(item => {
         const div = document.createElement('div');
         div.className = 'event';
         div.innerHTML = `
-            <div class="time-label">${item.time}</div>
-            <div class="card" onclick="toggleCard(this)">
-                <span class="type-tag" contenteditable="true">${item.type}</span>
+            <div class="drag-handle">⠿</div>
+            <div class="time-tag" contenteditable="true">${item.time}</div>
+            <div class="card" onclick="handleCardToggle(this)">
+                <span class="type-tag">${item.type}</span>
                 <div class="title" contenteditable="true">${item.title}</div>
-                <div class="open-info" contenteditable="true">${item.open}</div>
-                <div class="price-info" style="margin-top:4px;">
-                    <span class="price-tag" contenteditable="true">${item.price}</span>
+                <div class="meta-grid">
+                    <div class="meta-item"><b contenteditable="true">時間</b> <span contenteditable="true">${item.open}</span></div>
+                    <div class="meta-item"><b contenteditable="true">費用</b> <span contenteditable="true">${item.price}</span></div>
                 </div>
                 <div class="card-content">
                     <div class="story-section" contenteditable="true">${item.story}</div>
-                    <a href="${item.map}" class="nav-btn" target="_blank">🧭 開啟地圖導航</a>
-                    ${isEditing ? `<button onclick="removeItem(this)" style="background:none;border:none;color:red;font-size:0.7rem;margin-top:10px;">❌ 刪除此項</button>` : ''}
+                    <a href="https://www.google.com/maps/search/?api=1&query=${item.map}" class="nav-link" target="_blank">🗺️ Google Maps 導航</a>
+                    <div class="edit-controls">
+                        <input type="text" class="map-query" value="${item.map}" placeholder="地圖關鍵字" onblur="saveData()">
+                        <button class="delete-btn" onclick="removeItem(this)">刪除此項</button>
+                    </div>
                 </div>
             </div>
         `;
@@ -152,65 +168,75 @@ function loadData() {
     });
 }
 
-function toggleMode() {
-    isEditing = !isEditing;
-    const btn = document.querySelector('.mode-btn');
-    const body = document.body;
-    const addBtn = document.getElementById('add-new-btn');
-    
-    if (isEditing) {
-        btn.innerText = "🔓 編輯模式";
-        btn.classList.add('unlocked');
-        body.classList.remove('read-only');
-        body.classList.add('editing-mode');
-        addBtn.style.display = 'block';
-        sortable.option("disabled", false);
-    } else {
-        btn.innerText = "🔒 鎖定模式";
-        btn.classList.remove('unlocked');
-        body.classList.add('read-only');
-        body.classList.remove('editing-mode');
-        addBtn.style.display = 'none';
-        sortable.option("disabled", true);
-        saveAll();
-    }
-}
-
-function saveAll() {
-    const events = document.querySelectorAll('.event');
-    const data = Array.from(events).map(ev => ({
-        time: ev.querySelector('.time-label').innerText,
-        type: ev.querySelector('.type-tag').innerText,
-        title: ev.querySelector('.title').innerText,
-        open: ev.querySelector('.open-info').innerText,
-        price: ev.querySelector('.price-tag').innerText,
-        story: ev.querySelector('.story-section').innerHTML,
-        map: ev.querySelector('.nav-btn').href
-    }));
-    localStorage.setItem('cambridge_v5_data', JSON.stringify(data));
-}
-
-function toggleCard(card) {
+function handleCardToggle(card) {
     if (!isEditing) {
         card.classList.toggle('active');
     }
 }
 
-function addNewItem() {
+function toggleMode() {
+    isEditing = !isEditing;
+    const btn = document.getElementById('lock-btn');
+    document.body.classList.toggle('editing-mode');
+    
+    if (isEditing) {
+        btn.innerText = "🔓 編輯中";
+        btn.classList.add('unlocked');
+        sortable.option("disabled", false);
+    } else {
+        btn.innerText = "🔒 鎖定中";
+        btn.classList.remove('unlocked');
+        sortable.option("disabled", true);
+        saveData();
+        updateMap();
+    }
+}
+
+function saveData() {
+    const events = document.querySelectorAll('.event');
+    const data = Array.from(events).map(ev => ({
+        time: ev.querySelector('.time-tag').innerText,
+        type: ev.querySelector('.type-tag').innerText,
+        title: ev.querySelector('.title').innerText,
+        open: ev.querySelectorAll('.meta-item span')[0].innerText,
+        price: ev.querySelectorAll('.meta-item span')[1].innerText,
+        story: ev.querySelector('.story-section').innerHTML,
+        map: ev.querySelector('.map-query') ? ev.querySelector('.map-query').value : ev.querySelector('.nav-link').href.split('query=')[1]
+    }));
+    localStorage.setItem('cambridge_v6_final', JSON.stringify(data));
+}
+
+function updateMap() {
+    const events = document.querySelectorAll('.event');
+    const locations = Array.from(events).map(ev => {
+        return ev.querySelector('.map-query') ? ev.querySelector('.map-query').value : ev.querySelector('.nav-link').href.split('query=')[1];
+    });
+    // 建立多點地圖
+    const base = "https://www.google.com/maps/embed/v1/search?key=YOUR_GOOGLE_MAPS_API_KEY_OR_PREVIEW&q=Cambridge+University+UK";
+    // 注意：因瀏覽器限制，iframe embed 僅支援單點，此處以 Cambridge 為中心
+    document.getElementById('main-map').src = `https://maps.google.com/maps?q=${locations.join('|')}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+}
+
+function addNewItem(type) {
     const container = document.getElementById('itinerary-list');
     const div = document.createElement('div');
     div.className = 'event';
     div.innerHTML = `
-        <div class="time-label" contenteditable="true">12:00</div>
-        <div class="card">
-            <span class="type-tag" contenteditable="true">NEW</span>
-            <div class="title" contenteditable="true">新行程標題</div>
-            <div class="open-info" contenteditable="true">時間：09:00 - 18:00</div>
-            <div class="price-info"><span class="price-tag" contenteditable="true">£ 門票資訊</span></div>
+        <div class="drag-handle">⠿</div>
+        <div class="time-tag" contenteditable="true">12:00</div>
+        <div class="card active">
+            <span class="type-tag">${type}</span>
+            <div class="title" contenteditable="true">新${type}項目</div>
+            <div class="meta-grid">
+                <div class="meta-item"><b>時間</b> <span contenteditable="true">09:00 - 18:00</span></div>
+                <div class="meta-item"><b>費用</b> <span contenteditable="true">£ 0.00</span></div>
+            </div>
             <div class="card-content" style="display:block;">
-                <div class="story-section" contenteditable="true">請輸入深度介紹內容...</div>
-                <a href="#" class="nav-btn">🧭 設定地圖連結</a>
-                <button onclick="removeItem(this)" style="background:none;border:none;color:red;font-size:0.7rem;margin-top:10px;">❌ 刪除此項</button>
+                <div class="story-section" contenteditable="true"><b>深度介紹</b><ul><li>重點 1</li></ul></div>
+                <div class="edit-controls" style="display:flex;">
+                    <input type="text" class="map-query" value="" placeholder="輸入地圖搜尋關鍵字" onblur="saveData()">
+                    <button class="delete-btn" onclick="removeItem(this)">刪除</button>
+                </div>
             </div>
         </div>
     `;
@@ -218,17 +244,17 @@ function addNewItem() {
 }
 
 function removeItem(btn) {
-    btn.closest('.event').remove();
+    if(confirm('確定刪除此行程？')) btn.closest('.event').remove();
 }
 
 const sortable = new Sortable(document.getElementById('itinerary-list'), {
-    handle: '.time-label',
+    handle: '.drag-handle',
     animation: 150,
     disabled: true,
     ghostClass: 'sortable-ghost'
 });
 
-window.onload = loadData;
+window.onload = init;
 </script>
 </body>
 </html>
