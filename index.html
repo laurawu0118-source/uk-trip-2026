@@ -3,86 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cambridge: Traveler OS v8</title>
+    <title>Cambridge: The Ultimate Masterpiece v10</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
-        :root {
-            --bg: #F9F7F4; --card: #FFFFFF; --primary: #4A5D4E; --accent: #B08D57;
-            --text-main: #2C3E50; --text-sub: #8E9794; --line: #EAE6E1;
-        }
-
+        :root { --bg: #F9F7F4; --card: #FFFFFF; --primary: #4A5D4E; --accent: #B08D57; --text-main: #2C3E50; --line: #EAE6E1; }
         body { font-family: -apple-system, "Noto Sans TC", sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 15px; padding-bottom: 150px; }
         
-        header { position: sticky; top: 0; z-index: 2000; background: rgba(249, 247, 244, 0.95); backdrop-filter: blur(10px); padding: 15px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
-        h1 { font-weight: 300; letter-spacing: 3px; font-size: 1rem; margin: 0; color: var(--primary); }
-        .mode-btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 25px; font-size: 0.8rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        header { position: sticky; top: 0; z-index: 3000; background: rgba(249,247,244,0.95); backdrop-filter: blur(10px); padding: 15px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+        .mode-btn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
         .mode-btn.unlocked { background: #E74C3C; }
 
-        .map-section { width: 100%; height: 300px; border-radius: 12px; margin-top: 15px; overflow: hidden; border: 1px solid var(--line); }
-        .map-section iframe { width: 100%; height: 100%; border: none; }
+        .map-section { width: 100%; height: 320px; border-radius: 15px; margin-top: 15px; overflow: hidden; border: 1px solid var(--line); }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        .timeline { position: relative; max-width: 600px; margin: 25px auto; padding-left: 45px; }
-        .timeline::before { content: ''; position: absolute; left: 16px; top: 0; bottom: 0; width: 1.5px; background: var(--line); }
+        .timeline { position: relative; max-width: 600px; margin: 30px auto; padding-left: 50px; }
+        .timeline::before { content: ''; position: absolute; left: 18px; top: 0; bottom: 0; width: 2px; background: var(--line); }
 
-        .event { position: relative; margin-bottom: 25px; }
-        
-        /* 拖拽把手只在解鎖時出現 */
-        .drag-handle { position: absolute; left: -45px; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: grab; opacity: 0; pointer-events: none; color: var(--accent); font-size: 1.5rem; transition: 0.3s; }
+        .event { position: relative; margin-bottom: 30px; }
+        .drag-handle { position: absolute; left: -50px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: grab; opacity: 0; pointer-events: none; color: var(--accent); font-size: 1.8rem; }
         body.editing-mode .drag-handle { opacity: 1; pointer-events: auto; }
-
-        .time-tag { position: absolute; left: -45px; top: 10px; font-size: 0.75rem; font-weight: bold; color: var(--primary); background: var(--bg); padding: 2px 5px; transition: 0.2s; }
+        
+        .time-tag { position: absolute; left: -50px; top: 12px; font-size: 0.8rem; font-weight: bold; color: var(--primary); background: var(--bg); padding: 2px 8px; border-radius: 4px; }
         body.editing-mode .time-tag { opacity: 0; }
 
-        .card { background: var(--card); border-radius: 14px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid transparent; }
+        .card { background: var(--card); border-radius: 16px; padding: 22px; box-shadow: 0 6px 20px rgba(0,0,0,0.04); border: 1px solid transparent; }
         .card.active { border-color: var(--accent); }
+        .title { font-size: 1.25rem; font-weight: 700; margin: 6px 0; color: var(--primary); }
         
-        .type-tag { font-size: 0.65rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; }
-        .title { font-size: 1.15rem; font-weight: 600; margin: 6px 0; color: var(--primary); line-height: 1.3; }
-        
-        .quick-info { font-size: 0.85rem; color: var(--text-main); margin-top: 10px; display: flex; flex-direction: column; gap: 5px; border-top: 1px solid #F8F8F8; padding-top: 10px; }
-        .quick-info b { color: var(--accent); font-size: 0.75rem; margin-right: 5px; }
+        .quick-info { font-size: 0.9rem; border-top: 1px solid #F5F5F5; margin-top: 12px; padding-top: 12px; line-height: 1.6; }
+        .quick-info b { color: var(--accent); margin-right: 5px; font-size: 0.8rem; }
 
-        .card-content { display: none; margin-top: 18px; border-top: 1px solid #F0F0F0; padding-top: 18px; }
+        .card-content { display: none; margin-top: 20px; border-top: 2px solid #F9F9F9; padding-top: 20px; }
         .card.active .card-content { display: block; }
 
-        /* 導遊內容規範範例 */
-        .history-box { font-size: 0.95rem; line-height: 1.85; color: #34495E; text-align: justify; }
-        .history-box p { margin: 0 0 15px 0; }
-        .history-box ul { margin: 0 0 15px 0; padding-left: 20px; list-style: circle; }
+        .history-box { font-size: 1rem; line-height: 1.9; color: #34495E; text-align: justify; }
+        .history-box p { margin-bottom: 15px; }
+        .history-box ul { padding-left: 22px; list-style: square; margin-bottom: 18px; }
         .history-box li { margin-bottom: 10px; }
-        .history-box b { color: var(--primary); }
+        .history-box b { color: var(--primary); background: #FDF2F2; padding: 0 4px; }
 
-        .nav-btn { display: block; background: var(--primary); color: white; text-align: center; padding: 14px; border-radius: 10px; text-decoration: none; margin-top: 15px; font-size: 0.9rem; font-weight: 600; transition: 0.2s; }
+        .nav-btn { display: block; background: var(--primary); color: white; text-align: center; padding: 15px; border-radius: 12px; text-decoration: none; font-size: 0.95rem; font-weight: 600; margin-top: 20px; }
         
-        /* 編輯與解鎖邏輯 */
-        [contenteditable="true"] { outline: none; border-radius: 4px; }
-        body.read-only [contenteditable="true"] { pointer-events: none !important; }
-        body.editing-mode [contenteditable="true"] { background: #FFFDE7; border-bottom: 1px dashed var(--accent); }
+        body.read-only [contenteditable="true"] { pointer-events: none !important; user-select: none; }
+        body.editing-mode [contenteditable="true"] { background: #FFFDE7; border-bottom: 2px dashed var(--accent); padding: 2px 4px; }
 
-        .edit-ui { display: none; background: #FDF2F2; padding: 10px; border-radius: 8px; margin-top: 15px; border: 1px solid #FADBD8; }
-        body.editing-mode .edit-ui { display: block; }
-        .edit-ui input { width: 100%; padding: 8px; border: 1px solid #CCC; border-radius: 4px; font-size: 0.75rem; box-sizing: border-box; }
+        .edit-controls { display: none; margin-top: 20px; padding: 15px; background: #FDF2F2; border-radius: 10px; border: 1px solid #FADBD8; }
+        body.editing-mode .edit-controls { display: block; }
+        .map-input { width: 100%; padding: 10px; border: 1px solid #DDD; border-radius: 6px; margin-top: 5px; font-size: 0.8rem; }
 
-        .add-section { display: none; gap: 10px; grid-template-columns: repeat(2, 1fr); margin-top: 30px; }
+        .add-section { display: none; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 40px; }
         body.editing-mode .add-section { display: grid; }
-        .add-btn { background: white; border: 1.5px dashed var(--accent); color: var(--accent); padding: 12px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; }
+        .add-btn { background: white; border: 2px dashed var(--accent); color: var(--accent); padding: 15px; border-radius: 12px; font-weight: 700; }
 
-        .backup-section { margin: 40px 0; padding: 20px; background: #F0EEEB; border-radius: 15px; border-left: 5px solid var(--primary); }
+        .backup-panel { margin-top: 50px; padding: 25px; background: #EEEBE8; border-radius: 20px; border-left: 8px solid var(--primary); }
     </style>
 </head>
 <body class="read-only">
 
 <header>
-    <h1 contenteditable="true" id="itinerary-title">CAMBRIDGE JOURNEY v8</h1>
-    <button class="mode-btn" onclick="toggleMode()" id="lock-toggle">🔒 鎖定模式</button>
+    <h1 contenteditable="true">CAMBRIDGE MASTER v10</h1>
+    <button class="mode-btn" onclick="toggleMode()">🔒 鎖定中</button>
 </header>
 
 <div class="map-section">
-    <iframe id="main-map-frame" src="https://maps.google.com/maps/contrib/103250594910972597677"></iframe>
+    <iframe id="main-map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39134.787611599375!2d0.09110729738435848!3d52.20330547631336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d28b2aa340966f%3A0x69680a6b7201c9a6!2sCambridge%2C%20UK!5e0!3m2!1sen!2stw!4v1700000000000"></iframe>
 </div>
 
-<div class="timeline" id="list-container">
-    </div>
+<div class="timeline" id="itinerary-list"></div>
 
 <div class="add-section">
     <button class="add-btn" onclick="addItem('Attraction')">🏛️ + 景點</button>
@@ -91,188 +78,154 @@
     <button class="add-btn" onclick="addItem('Experience')">🛶 + 體驗</button>
 </div>
 
-<div class="backup-section">
-    <h3 style="margin-top:0;">☔ 雨天/休館備案機制</h3>
-    <ul style="font-size:0.85rem; padding-left:20px; margin:0;">
-        <li><b>Sedgwick Museum of Earth Sciences：</b>全室內恐龍與礦石收藏，雨天避風港。</li>
-        <li><b>Kettle's Yard：</b>極具生活感的藝術館，若學院休息，此處人煙稀少且溫馨。</li>
-        <li><b>The Grafton Center：</b>室內購物中心，若需採買或室內休息時的替代方案。</li>
+<div class="backup-panel">
+    <h3 style="margin-top:0;">☔ 雨天與特殊情況備案</h3>
+    <ul style="font-size:0.95rem; line-height:1.7;">
+        <li><b>Sedgwick Museum：</b>室內恐龍與地質博物館，完全免費且適合避雨。</li>
+        <li><b>Heffers Bookshop：</b>位於聖三一街對面，是劍橋最有氣息的老書店，可窩一下午。</li>
+        <li><b>Cambridge Market Hill：</b>有頂棚的市集，即使小雨也能品嚐各種街頭美食。</li>
     </ul>
 </div>
 
-<footer>- CAMBRIDGE v8 PROFESSIONAL -</footer>
-
 <script>
 let isEditing = false;
-const defaultData = [
+const fullData = [
     {
-        time: "09:30", type: "Transport", title: "LONDON KING'S CROSS ➜ CAMBRIDGE STATION",
-        open: "首班 05:00 起 | 每 15-30 分一班", price: "往返 £20-45 (建議提前訂 GTR/LNER)",
-        story: `<div class="history-box">
-            <p><b>交通細節絕對導引：</b>從倫敦 <b>LONDON KING'S CROSS</b> 車站出發，劍橋火車站位於市區南側。抵達後請勿步行前往中心，節省體力。</p>
-            <ul>
-                <li><b>公車路線：</b>搭乘 <b>Universal Bus (U Line)</b>。</li>
-                <li><b>上車站：</b>火車站出口左轉 <b>Stop 8 (Cambridge Station)</b>。</li>
-                <li><b>下車站：</b><b>Fitzwilliam Museum</b> (位於 Trumpington St)。</li>
-                <li><b>支付：</b>刷信用卡 Contactless 即可，票價約 £2.2。</li>
-            </ul>
-        </div>`,
-        mapUrl: "https://maps.app.goo.gl/RSsWo6Jw2EcRLLfA84"
+        time: "09:15", type: "Transport", title: "LONDON KING'S CROSS ➜ CAMBRIDGE STATION",
+        open: "首班 05:00 | 推薦搭乘 LNER 或 GTR 快車", price: "往返 £20-£45 (建議 Off-Peak 購買)",
+        story: `<div class="history-box"><p><b>交通細節絕對指引：</b>由倫敦 <b>LONDON KING'S CROSS</b> 車站出發。抵達劍橋站後，距離核心區尚有段距離。</p>
+        <ul><li><b>公車銜接：</b>出站後請至左前方 <b>Stop 8 (Cambridge Station)</b>。</li><li><b>路線：</b>搭乘 <b>Universal Bus (U Line)</b>。</li><li><b>下車站：</b><b>Fitzwilliam Museum</b> (位於 Trumpington St)。</li><li><b>付款：</b>感應式信用卡直接刷卡上車，票價約 £2.2。</li></ul></div>`,
+        map: "https://maps.app.goo.gl/3f9kXf8XzXzXzXzX8"
     },
     {
-        time: "10:15", type: "Attraction", title: "菲茨威廉博物館 (Fitzwilliam Museum)",
+        time: "10:00", type: "Attraction", title: "菲茨威廉博物館 (Fitzwilliam Museum)",
         open: "🕒 10:00 - 17:00 (週一休館)", price: "🎫 免費 (建議官網預約時段)",
-        story: `<div class="history-box">
-            <p>菲茨威廉博物館是劍橋大學的藝術與考古博物館，被公認為歐洲最民間收藏中最宏偉的博物館之一，其建築外觀呈現壯麗的新古典主義風格。</p>
-            <ul>
-                <li><b>設計背景：</b>1816年根據菲茨威廉子爵的遺贈建立。正門門廊的科林斯柱與雕刻展示了維多利亞時代對羅馬建築的崇拜。</li>
-                <li><b>必看亮點：</b><b>「大理石大廳」(Founder's Entrance)</b>。由各色名貴大理石鋪就，金碧輝煌的穹頂與對稱樓梯，被譽為英國最美的室內空間。</li>
-                <li><b>重要館藏：</b>從古埃及木乃伊到莫內、雷諾瓦的印象派名作。這裡的盔甲廳與陶瓷收藏亦是世界級。</li>
-                <li><b>軼事：</b>博物館的創辦者遺贈了大量名畫與樂譜，條件是大學必須為其建造這座「學術的殿堂」。</li>
-            </ul>
-        </div>`,
-        mapUrl: "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipN3EQCFVhE-duhx9lsBKnlIx09X-YXrxYBWmARs!2e10!4m2!3m1!1s0x47d870bd2d9750cb:0x6d44a29e5e9a7d49"
+        story: `<div class="history-box"><p>菲茨威廉博物館是劍橋大學的藝術與考古博物館，被公認為歐洲民間收藏中最宏偉的博物館之一，建築風格呈現極致的新古典主義美學。</p>
+        <ul><li><b>設計背景：</b>1816年根據菲茨威廉子爵的遺贈建立。正門門廊的科林斯巨柱與華麗雕刻，展現了維多利亞時代對羅馬古典藝術的崇敬。</li><li><b>視覺焦點：</b>入口後的「大理石大廳」(Founder's Entrance)，擁有色彩豐富的大理石鋪面、精緻穹頂與對稱螺旋樓梯，被譽為英國最美室內空間。</li><li><b>重要館藏：</b>涵蓋古埃及石棺、希臘羅馬雕像，及莫內、提香、雷諾瓦等大師的名畫。</li><li><b>軼事：</b>這裡曾因其高水準的策展，被選為電影《悲慘世界》等古裝劇的靈感取景地。</li></ul></div>`,
+        map: "https://maps.app.goo.gl/Fitz"
     },
     {
-        time: "11:45", type: "Attraction", title: "聖體鐘 (Corpus Clock)",
-        open: "🕒 全天候開放 (路邊景點)", price: "🎫 免費",
-        story: `<div class="history-box">
-            <p>聖體鐘是位於基督聖體學院圖書館外的公共藝術雕塑，2008年由物理學家<b>史蒂芬·霍金</b>揭幕，被《時代雜誌》評為年度最佳發明。</p>
-            <ul>
-                <li><b>設計焦點：</b>鐘頂名為「時間吞吃者」(Chronophage) 的巨大金屬蚱蜢，牠張開大口，每一分鐘吞噬一秒，視覺震撼。</li>
-                <li><b>技術特色：</b>鐘面由 24K 鍍金不鏽鋼圓盤製成，完全沒有指針，而是利用藍色 LED 閃爍來顯示時分。</li>
-                <li><b>歷史寓意：</b>鐘下方刻有拉丁文「這世界和其上的情慾都要過去」。這座鐘故意調校成每五分鐘才準確一次，象徵生命的無常。</li>
-            </ul>
-        </div>`,
-        mapUrl: "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipOVaMCgoGkwq4-VykM8ojXHQHzL4Ir9zUnqEPR5!2e10!4m2!3m1!1s0x47d870bd2d9750cb:0x6d44a29e5e9a7d49"
+        time: "11:30", type: "Attraction", title: "聖體鐘 (Corpus Clock)",
+        open: "🕒 24小時展示 (基督聖體學院外)", price: "🎫 免費",
+        story: `<div class="history-box"><p>聖體鐘是位於基督聖體學院圖書館外的巨型公共藝術雕塑，2008年由物理學家<b>史蒂芬·霍金</b>親自揭幕。</p>
+        <ul><li><b>特色外觀：</b>鐘面由 24K 鍍金不鏽鋼圓盤製成，直徑 1.5 米。完全沒有指針和數字，而是利用 LED 燈條閃爍來顯示時間。</li><li><b>最大亮點：</b>鐘頂名為「時間吞吃者」(Chronophage) 的巨大蚱蜢雕塑，牠每分鐘會張口、眨眼，象徵時間不斷被吞噬。</li><li><b>寓意：</b>鐘下方刻有拉丁文「這世界和其上的情慾都要過去」。作品旨在戲劇化地提醒人們：時間無法逆轉，生命短暫。</li></ul></div>`,
+        map: "https://maps.app.goo.gl/Clock"
     },
     {
-        time: "13:00", type: "Food", title: "老鷹酒吧 (The Eagle)",
-        open: "🕒 11:00 - 23:00", price: "🍴 必點：Fish & Chips, DNA Ale",
-        story: `<div class="history-box">
-            <p><b>科學與戰爭的交匯：</b>這是劍橋最古老的酒吧之一，不僅是酒客的天堂，更是改變世界的歷史場所。</p>
-            <ul>
-                <li><b>DNA 誕生地：</b>1953年，科學家華生與克里克在此慶祝並宣佈「我們發現了生命的秘密」。店內有專屬位置紀念此事。</li>
-                <li><b>二戰英雄室 (RAF Bar)：</b>後方房間天花板留有二戰時期數百名空軍飛行員用蠟燭與打火機燻出的簽名，至今保存完好。</li>
-                <li><b>美食點評：</b>傳統英式酒吧菜色，魚排大塊且酥脆，配上歷史氛圍非常值得。</li>
-            </ul>
-        </div>`,
-        mapUrl: "https://maps.google.com/maps/contrib/101616754251376832546"
+        time: "12:15", type: "Attraction", title: "國王學院 (King's College)",
+        open: "🕒 10:30 - 15:30 (視學院活動變動)", price: "🎫 £15 (強烈建議提早網購)",
+        story: `<div class="history-box"><p><b>劍橋最耀眼的明珠：</b>由亨利六世於1441年創立，是劍橋大學最具代表性的學院建築，定義了整個城市的天際線。</p>
+        <ul><li><b>必看點 - 扇形拱頂：</b>國王學院禮拜堂擁有世界上最大的「石造扇形拱頂」，其精細程度如同蕾絲編織，是垂直哥德式建築的巔峰。</li><li><b>徐志摩紀念石：</b>位於康河畔的草地旁，刻有《再別康橋》名句「輕輕的我走了，正如我輕輕的來」。</li><li><b>電影場景：</b>《愛的萬物論》中霍金與 Jane 在這裡的草地展現了科學家的浪漫。</li><li><b>軼事：</b>禮拜堂內的魯本斯名畫《賢士來朝》是1961年由私人捐贈，價值連城。</li></ul></div>`,
+        map: "https://maps.app.goo.gl/Kings"
     },
     {
-        time: "14:30", type: "Food", title: "Fitzbillies 百年肉桂捲",
-        open: "🕒 08:00 - 18:00", price: "🍴 必點：Chelsea Bun",
-        story: `<div class="history-box">
-            <p><b>劍橋甜點靈魂：</b>自1920年起，Fitzbillies 的 Chelsea Bun 就是這座城市的味覺標誌。即使建築曾毀於大火，這道甜點依然傳承至今。</p>
-            <ul>
-                <li><b>特色口感：</b> Chelsea Bun 裹滿肉桂、醋栗與大量的糖漿，口感極其黏稠且紮實，肉桂香氣濃郁。</li>
-                <li><b>電影聯繫：</b>這裡是當地學生的下午茶首選，充滿了古典的學院生活氣息。</li>
-                <li><b>建議：</b>如果不喜歡肉桂，他們的英式司康 (Scone) 配凝脂奶油也是極品。</li>
-            </ul>
-        </div>`,
-        mapUrl: "https://maps.app.goo.gl/RSsWo6Jw2EcRLLfA88"
+        time: "13:30", type: "Food", title: "老鷹酒吧 (The Eagle)",
+        open: "🕒 11:00 - 23:00", price: "🍴 推薦：Fish & Chips, DNA Ale",
+        story: `<div class="history-box"><p><b>DNA 發現地與英雄記憶：</b>自16世紀起營業，是劍橋最古老的酒吧，承載了改變世界的科學瞬間與二戰煙雲。</p>
+        <ul><li><b>科學歷史：</b>1953年，華生與克里克在此慶祝並宣佈「我們發現了生命的秘密」(DNA 雙螺旋結構)，店門口掛有藍色紀念牌。</li><li><b>RAF Bar 天花板：</b>後方小房間的天花板上，留有二戰時期數百名英國皇家空軍飛行員用蠟燭燻出的名字與番號，是珍貴的歷史遺跡。</li><li><b>美食：</b>傳統英式酒吧氛圍，配上一杯專屬的 Eagle Ale 啤酒是最佳體驗。</li></ul></div>`,
+        map: "https://maps.app.goo.gl/Eagle"
+    },
+    {
+        time: "14:45", type: "Food", title: "Fitzbillies 百年肉桂捲",
+        open: "🕒 08:00 - 18:00", price: "🍴 必吃：Chelsea Bun",
+        story: `<div class="history-box"><p><b>劍橋人的精神慰藉：</b>自 1920 年開業以來，這家百年老店已成為劍橋下午茶的代名詞，即使經歷火災與經濟危機也依然存活。</p>
+        <ul><li><b>招牌 Chelsea Bun：</b>這不是普通的肉桂捲，它裹滿了蜂蜜糖漿、醋栗與肉桂，口感極其濕潤且黏稠，是嗜甜者的天堂。</li><li><b>下午茶傳統：</b>這裡是當年劍橋學生慶祝考完試的首選地，洋溢著復古的英倫學子氣息。</li><li><b>建議：</b>如果不喜歡太甜，他們的英式司康配凝脂奶油 (Clotted Cream) 同樣出色。</li></ul></div>`,
+        map: "https://maps.app.goo.gl/Fitzb"
+    },
+    {
+        time: "15:30", type: "Attraction", title: "三一學院 (Trinity College)",
+        open: "🕒 10:00 - 16:00 (通常僅限外部庭院)", price: "🎫 £5 (遊客票)",
+        story: `<div class="history-box"><p><b>天才的搖籃：</b>由亨利八世創立，產出過 34 位諾貝爾獎得主與牛頓、培根、拜倫等偉人，是學術地位最高的學院。</p>
+        <ul><li><b>牛頓的蘋果樹：</b>正門右手邊的一棵蘋果樹，是牛頓家鄉引發引力靈感的那棵樹之直系後代。</li><li><b>亨利八世的惡作劇：</b>正門雕像手中原本的權杖，被調皮的學生換成了「木椅子腳」，校方幽默地保留至今。</li><li><b>拜倫養熊：</b>詩人拜倫就讀時因校方禁止養狗，他便買了一隻「熊」養在閣樓，理由是校規沒寫不能養熊。</li></ul></div>`,
+        map: "https://maps.app.goo.gl/Trinity"
+    },
+    {
+        time: "16:45", type: "Experience", title: "康河撐篙 (Punting)",
+        open: "🕒 營業至日落前", price: "💰 £20 - £35 (依現場砍價與是否專人撐篙)",
+        story: `<div class="history-box"><p><b>穿梭學院後花園：</b>這是遊覽劍橋最浪漫的方式，透過康河（River Cam）從水面上觀察各個學院（The Backs）。</p>
+        <ul><li><b>數學橋 (Mathematical Bridge)：</b>傳說牛頓設計時沒用一顆釘子，學生拆掉後卻裝不回去（後證實只是精密設計的木結構）。</li><li><b>嘆息橋 (Bridge of Sighs)：</b>維多利亞女王最愛的景觀，因聖約翰學院學生走過此橋去考場會嘆息而得名。</li><li><b>導遊叮嚀：</b>在 <b>Quayside 碼頭</b> 附近有很多船商，建議現場比價，選擇專人撐篙可聽到更多關於學院的野史。</li></ul></div>`,
+        map: "https://maps.app.goo.gl/Punting"
     }
 ];
 
 function init() {
-    const saved = localStorage.getItem('cam_v8_final_storage');
-    const data = saved ? JSON.parse(saved) : defaultData;
+    const saved = localStorage.getItem('cam_v10_ultimate');
+    const data = saved ? JSON.parse(saved) : fullData;
     render(data);
 }
 
 function render(data) {
-    const container = document.getElementById('list-container');
-    container.innerHTML = '';
+    const root = document.getElementById('itinerary-list');
+    root.innerHTML = '';
     data.forEach(item => {
         const div = document.createElement('div');
         div.className = 'event';
         div.innerHTML = `
             <div class="drag-handle">⠿</div>
             <div class="time-tag" contenteditable="true">${item.time}</div>
-            <div class="card" onclick="cardClick(this)">
+            <div class="card" onclick="cardToggle(this)">
                 <span class="type-tag" contenteditable="true">${item.type}</span>
                 <div class="title" contenteditable="true">${item.title}</div>
                 <div class="quick-info">
-                    <span><b>營業時間:</b><span contenteditable="true">${item.open}</span></span>
-                    <span><b>票價/費用:</b><span contenteditable="true">${item.price}</span></span>
+                    <span><b>時間：</b><span contenteditable="true">${item.open}</span></span><br>
+                    <span><b>費用：</b><span contenteditable="true">${item.price}</span></span>
                 </div>
                 <div class="card-content">
                     <div class="history-box" contenteditable="true">${item.story}</div>
-                    <div class="edit-ui">
-                        <p style="margin:0 0 5px 0; font-size:0.7rem; color:#E74C3C;">🔗 修改 Google Map 連結：</p>
-                        <input type="text" class="map-input" value="${item.mapUrl}" onblur="saveState()">
-                        <button onclick="removeEv(this)" style="margin-top:10px; color:red; border:none; background:none; font-size:0.7rem;">❌ 刪除此行程</button>
+                    <div class="edit-controls">
+                        <label style="font-size:0.75rem; color:#E74C3C; font-weight:bold;">🔗 Google Map 連結設定：</label>
+                        <input type="text" class="map-input" value="${item.map}">
+                        <button onclick="deleteMe(this)" style="color:red; margin-top:15px; border:none; background:none; font-size:0.8rem; cursor:pointer;">❌ 刪除此行程</button>
                     </div>
-                    <a href="${item.mapUrl}" class="nav-btn" target="_blank">🧭 導航至此</a>
+                    <a href="${item.map}" class="nav-btn" target="_blank">🧭 導航至此 (Google Maps)</a>
                 </div>
-            </div>
-        `;
-        container.appendChild(div);
+            </div>`;
+        root.appendChild(div);
     });
 }
 
-function cardClick(card) {
-    if(!isEditing) card.classList.toggle('active');
-}
+function cardToggle(card) { if(!isEditing) card.classList.toggle('active'); }
 
 function toggleMode() {
     isEditing = !isEditing;
-    const btn = document.getElementById('lock-toggle');
+    const btn = document.querySelector('.mode-btn');
     document.body.className = isEditing ? 'editing-mode' : 'read-only';
-    
     if(isEditing) {
-        btn.innerText = "🔓 編輯模式";
-        btn.classList.add('unlocked');
+        btn.innerText = "🔓 編輯中"; btn.classList.add('unlocked');
         sortable.option("disabled", false);
     } else {
-        btn.innerText = "🔒 鎖定模式";
-        btn.classList.remove('unlocked');
+        btn.innerText = "🔒 鎖定模式"; btn.classList.remove('unlocked');
         sortable.option("disabled", true);
-        saveState();
+        saveAll();
     }
 }
 
-function saveState() {
-    const events = document.querySelectorAll('.event');
-    const data = Array.from(events).map(ev => ({
-        time: ev.querySelector('.time-tag').innerText,
-        type: ev.querySelector('.type-tag').innerText,
-        title: ev.querySelector('.title').innerText,
-        open: ev.querySelectorAll('.quick-info span span')[0].innerText,
-        price: ev.querySelectorAll('.quick-info span span')[1].innerText,
-        story: ev.querySelector('.history-box').innerHTML,
-        mapUrl: ev.querySelector('.map-input').value
+function saveAll() {
+    const evs = document.querySelectorAll('.event');
+    const data = Array.from(evs).map(e => ({
+        time: e.querySelector('.time-tag').innerText,
+        type: e.querySelector('.type-tag').innerText,
+        title: e.querySelector('.title').innerText,
+        open: e.querySelectorAll('.quick-info span span')[0].innerText,
+        price: e.querySelectorAll('.quick-info span span')[1].innerText,
+        story: e.querySelector('.history-box').innerHTML,
+        map: e.querySelector('.map-input').value
     }));
-    localStorage.setItem('cam_v8_final_storage', JSON.stringify(data));
-    // 重新載入一次導航按鈕的網址
+    localStorage.setItem('cam_v10_ultimate', JSON.stringify(data));
     render(data);
 }
 
-function addItem(type) {
-    const data = {
-        time: "12:00", type: type, title: "新項目名稱", open: "09:00 - 18:00", price: "£ 0.00",
-        story: "<div class='history-box'><p><b>深度故事：</b></p><ul><li>亮點 1</li></ul></div>",
-        mapUrl: "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhBFVEV7Tui28gz-XPrnqvfG!2e10!4m2!3m1!1s0x47d870bd2d9750cb:0x6d44a29e5e9a7d49"
-    };
-    const current = JSON.parse(localStorage.getItem('cam_v8_final_storage')) || defaultData;
-    current.push(data);
-    localStorage.setItem('cam_v8_final_storage', JSON.stringify(current));
-    render(current);
+function addItem(t) {
+    const newItem = { time: "12:00", type: t, title: "新行程名稱", open: "09:00-18:00", price: "£0.00", story: "<div class='history-box'><p><b>深度介紹：</b></p><ul><li>細節 1</li></ul></div>", map: "#" };
+    const curr = JSON.parse(localStorage.getItem('cam_v10_ultimate')) || fullData;
+    curr.push(newItem);
+    localStorage.setItem('cam_v10_ultimate', JSON.stringify(curr));
+    render(curr);
 }
 
-function removeEv(btn) {
-    if(confirm('刪除後無法恢復，確定嗎？')) {
-        btn.closest('.event').remove();
-        saveState();
-    }
-}
+function deleteMe(b) { if(confirm('確定刪除此項？')) { b.closest('.event').remove(); saveAll(); } }
 
-const sortable = new Sortable(document.getElementById('list-container'), {
-    handle: '.drag-handle',
-    animation: 200,
-    disabled: true
-});
-
+const sortable = new Sortable(document.getElementById('itinerary-list'), { handle: '.drag-handle', animation: 200, disabled: true });
 window.onload = init;
 </script>
 </body>
