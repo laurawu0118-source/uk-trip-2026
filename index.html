@@ -3,155 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cambridge: The Ultimate Path</title>
+    <title>Cambridge: The Ultimate Path v5</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         :root {
-            --bg: #F9F7F4;
-            --card: #FFFFFF;
-            --primary: #4A5D4E;
-            --accent: #B08D57;
-            --text-main: #2C3E50;
-            --text-sub: #8E9794;
-            --line: #D5DBDB;
+            --bg: #F9F7F4; --card: #FFFFFF; --primary: #4A5D4E; --accent: #B08D57;
+            --text-main: #2C3E50; --text-sub: #8E9794; --line: #D5DBDB;
         }
 
-        body { font-family: -apple-system, "Noto Sans TC", sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 15px; line-height: 1.6; }
+        body { font-family: -apple-system, "Noto Sans TC", sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 15px; padding-bottom: 100px; }
         
         /* 日式極簡 Header */
-        header { text-align: center; padding: 30px 0; border-bottom: 1px solid #EAE6E1; margin-bottom: 20px; }
-        h1 { font-weight: 300; letter-spacing: 5px; font-size: 1.4rem; margin: 0; color: var(--primary); }
-        .edit-hint { font-size: 0.7rem; color: var(--accent); margin-top: 8px; letter-spacing: 1px; }
+        header { position: sticky; top: 0; z-index: 100; background: rgba(249, 247, 244, 0.9); backdrop-filter: blur(5px); padding: 15px 0; border-bottom: 1px solid #EAE6E1; display: flex; justify-content: space-between; align-items: center; }
+        h1 { font-weight: 300; letter-spacing: 3px; font-size: 1.1rem; margin: 0; color: var(--primary); }
+        .mode-btn { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; }
+        .mode-btn.unlocked { background: #E74C3C; }
 
-        /* 全日地圖按鈕 */
-        .map-overview { display: block; background: var(--primary); color: white; text-align: center; padding: 15px; border-radius: 12px; text-decoration: none; font-size: 0.9rem; margin-bottom: 25px; font-weight: 500; }
+        /* 嵌入地圖 */
+        .map-container { width: 100%; height: 250px; background: #EEE; border-radius: 12px; margin-top: 15px; overflow: hidden; border: 1px solid var(--line); }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        /* 時間軸容器 */
-        .timeline { position: relative; max-width: 600px; margin: 0 auto; padding-left: 45px; }
+        /* 時間軸 */
+        .timeline { position: relative; max-width: 600px; margin: 25px auto; padding-left: 45px; }
         .timeline::before { content: ''; position: absolute; left: 15px; top: 0; bottom: 0; width: 1.5px; background: var(--line); }
 
-        /* 卡片設計 */
-        .event { position: relative; margin-bottom: 20px; list-style: none; }
-        .time-label { position: absolute; left: -50px; top: 8px; font-size: 0.75rem; font-weight: bold; color: var(--primary); background: var(--bg); padding: 2px; z-index: 5; }
+        .event { position: relative; margin-bottom: 15px; transition: transform 0.2s; }
+        .time-label { position: absolute; left: -50px; top: 12px; font-size: 0.7rem; font-weight: bold; color: var(--primary); background: var(--bg); padding: 2px; z-index: 5; cursor: grab; }
         
-        .card { background: var(--card); border-radius: 14px; padding: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid transparent; cursor: grab; }
-        .card:active { cursor: grabbing; border: 1.5px solid var(--accent); }
+        .card { background: var(--card); border-radius: 14px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid transparent; }
+        .card.active .card-content { display: block; }
+        .card-content { display: none; margin-top: 15px; border-top: 1px solid #F0F0F0; padding-top: 15px; font-size: 0.92rem; }
 
-        .type-tag { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; display: block; }
-        .title { font-size: 1.1rem; font-weight: 600; margin: 4px 0; color: var(--primary); outline: none; }
+        .type-tag { font-size: 0.6rem; font-weight: bold; color: var(--accent); text-transform: uppercase; }
+        .title { font-size: 1.05rem; font-weight: 600; margin: 4px 0; color: var(--primary); }
         
-        /* 免點開資訊區 */
-        .quick-info { font-size: 0.8rem; color: var(--text-sub); margin-top: 6px; display: flex; flex-wrap: wrap; gap: 8px; }
-        .status-tag { background: #F2F4F4; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; color: #5D6D7E; }
+        /* 景點/餐廳必備透明資訊 */
+        .open-info { font-size: 0.8rem; color: var(--text-main); font-weight: 500; margin-top: 5px; display: block; }
+        .price-tag { display: inline-block; background: #F2F4F4; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; color: #5D6D7E; margin-right: 5px; }
 
-        /* 互動展開區 */
-        .card-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; font-size: 0.92rem; }
-        .card.active .card-content { max-height: 2500px; margin-top: 15px; border-top: 1px solid #F0F0F0; padding-top: 15px; }
+        /* 深度導讀樣式 */
+        .story-section { background: #FAF9F6; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid var(--accent); line-height: 1.7; }
+        .story-section b { color: var(--primary); display: block; margin-bottom: 5px; border-bottom: 1px dashed var(--line); }
 
-        /* 深度導讀文本 */
-        .story-section { background: #FAF9F6; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid var(--accent); }
-        .story-section b { color: var(--primary); display: block; margin-bottom: 8px; border-bottom: 1px dashed var(--line); padding-bottom: 4px; }
+        /* 編輯模式限制 */
+        .read-only [contenteditable="true"] { pointer-events: none; }
+        .editing-mode [contenteditable="true"] { border-bottom: 1px dashed var(--accent); }
+
+        .nav-btn { display: block; background: var(--primary); color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; margin-top: 10px; font-size: 0.85rem; }
         
-        [contenteditable="true"] { outline: none; border-bottom: 1px dashed transparent; }
-        [contenteditable="true"]:focus { border-bottom: 1px dashed var(--accent); background: #FFFCF5; }
+        /* 新增功能按鈕 */
+        .add-btn { width: 100%; padding: 15px; border: 2px dashed var(--line); background: none; color: var(--text-sub); border-radius: 12px; margin-top: 20px; font-size: 0.9rem; }
 
-        .btn { display: block; background: #EAE6E1; color: var(--primary); text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; margin-top: 10px; font-size: 0.85rem; font-weight: 600; }
-        .btn-primary { background: var(--primary); color: white; }
-
-        footer { text-align: center; padding: 40px 0; color: #BBB; font-size: 0.7rem; letter-spacing: 2px; }
-        
-        /* 拖曳動畫 */
-        .sortable-ghost { opacity: 0.4; background: #F0F0F0; }
+        footer { text-align: center; padding: 20px 0; color: #BBB; font-size: 0.7rem; }
     </style>
 </head>
-<body>
+<body class="read-only">
 
 <header>
-    <h1 contenteditable="true" id="app-title">CAMBRIDGE JOURNEY</h1>
-    <div class="edit-hint">長按拖曳順序 • 點擊文字修改 • 自動儲存</div>
+    <h1 id="app-title">CAMBRIDGE v5</h1>
+    <button class="mode-btn" onclick="toggleMode()">🔒 鎖定模式</button>
 </header>
 
-<div class="timeline">
-    <a href="https://www.google.com/maps/dir/London+King's+Cross/Fitzwilliam+Museum/King's+College/The+Eagle/Fitzbillies/Trinity+College/Quayside+Punting" class="map-overview" target="_blank">🗺️ 查看今日全日地圖路線</a>
-    
-    <div id="drag-container">
-        </div>
+<div class="map-container">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39163.60533311685!2d0.0910166!3d52.205337!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d87040460f975d%3A0x74fc7a561110052d!2sCambridge!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk"></iframe>
 </div>
 
-<footer>- CAMBRIDGE 2026 PRO GUIDE -</footer>
+<div class="timeline" id="itinerary-list">
+    </div>
+
+<button class="add-btn" id="add-new-btn" style="display:none;" onclick="addNewItem()">➕ 新增行程項目</button>
+
+<footer>- Cambridge Professional Guide 2026 -</footer>
 
 <script>
-// 初始預設深度資料
+let isEditing = false;
 const defaultData = [
     {
-        time: "09:30", type: "Transport", title: "London King's Cross ➜ Cambridge",
-        info: "U Line Bus | Stop 8 上車",
-        story: "<b>倫敦出發與交通細節：</b>抵達 Cambridge Station 後，走出大廳左轉前往 <b>Stop 8</b>。搭乘 Universal Bus (U 路線)，這是專為劍橋師生設計的線路。在 <b>Fitzwilliam Museum</b> 下車即達首站。票價 £2.2，感應信用卡即可。",
-        map: "https://www.google.com/maps/search/?api=1&query=Cambridge+Station+Stop+8"
+        time: "09:30", type: "Transport", title: "LONDON KING'S CROSS ➜ CAMBRIDGE STATION",
+        open: "首班車 05:00", price: "往返約 £20-40",
+        story: "<b>倫敦出發細節：</b>務必從 LONDON KING'S CROSS 出發（快車僅需 48 分鐘）。抵達後在火車站外 Stop 8 搭乘 Universal Bus (U 路線)。下車站為 Fitzwilliam Museum。這是一條串聯劍橋最精華科學與人文區的動脈。",
+        map: "https://www.google.com/maps/dir/London+King's+Cross/Cambridge+Station"
     },
     {
         time: "10:15", type: "Attraction", title: "Fitzwilliam Museum",
-        info: "🕒 10:00-17:00 | 🎫 免費",
-        story: "<b>維多利亞時代的瑰寶：</b>1816年成立。必看『大理石大廳』，那是由世界各地運來的多色石材鑲嵌出的極致奢華。館內收藏莫內、雷諾瓦與提香的名作。這座建築本身就是新古典主義的教科書，完美詮釋了大英帝國對美學的偏執。",
+        open: "🕒 開放：10:00 - 17:00", price: "🎫 門票：免費 (週一休)",
+        story: "<b>維多利亞時代的宮殿：</b>此博物館被稱為『大英博物館的縮影』。入口處的『大理石大廳』是全英最華麗的室內空間。必看點：古埃及木乃伊展廳與莫內的《楊樹》系列畫作。建築本身的新古典主義風格極其宏偉。",
         map: "https://www.google.com/maps/search/?api=1&query=Fitzwilliam+Museum"
     },
     {
         time: "11:30", type: "Attraction", title: "King's College (國王學院)",
-        info: "🕒 10:30-15:30 | 🎫 £15 (需預約)",
-        story: "<b>都鐸王朝的壯麗遺產：</b>禮拜堂的『扇形拱頂』是目前世界最大的石造結構。後方靠近康河處有<b>徐志摩紀念石</b>。這裡也是電影《愛的萬物論》中霍金與 Jane 表白的經典地點。建築歷時百年完工，見證了玫瑰戰爭與亨利八世的權力更迭。",
+        open: "🕒 開放：10:30 - 15:30", price: "🎫 門票：£15 (需預訂)",
+        story: "<b>史詩級建築與徐志摩：</b>這座學院由亨利六世創立。其禮拜堂擁有世界上最大的『扇形拱頂』，精細度如石頭蕾絲。必做：尋找康河邊的『徐志摩紀念石』。電影《愛的萬物論》中霍金與 Jane 在這裡的草地展現了科學家的浪漫。",
         map: "https://www.google.com/maps/search/?api=1&query=King's+College+Cambridge"
     },
     {
-        time: "13:00", type: "Food & History", title: "The Eagle (老鷹酒吧)",
-        info: "🕒 11:00-23:00 | 🍴 炸魚薯條",
-        story: "<b>生命秘密與二戰烽火：</b>1953年華生與克里克在此宣佈發現 DNA 雙螺旋結構。內側的 RAF Bar 天花板上，留有二戰時期飛行員用打火機燻出的名字與中隊番號，那是戰時青春與告別的真實殘跡，是劍橋最有靈魂的酒吧。",
+        time: "13:00", type: "Food", title: "The Eagle (老鷹酒吧)",
+        open: "🕒 營業：11:00 - 23:00", price: "🍴 推薦：炸魚薯條",
+        story: "<b>DNA 發現地與二戰幽魂：</b>1953年華生與克里克在此宣佈發現生命秘密。後方的 RAF Bar 天花板刻滿了二戰時期英國皇家空軍飛行員的名字，是用打火機燻上去的。這裡每一口啤酒都帶著歷史的味道。",
         map: "https://www.google.com/maps/search/?api=1&query=The+Eagle+Cambridge"
     },
     {
-        time: "14:00", type: "Food | 必吃", title: "Fitzbillies 百年肉桂捲",
-        info: "🕒 08:00-18:00 | 🍴 Chelsea Bun",
-        story: "<b>劍橋的靈魂甜點：</b>自1920年開業，招牌 Chelsea Bun 裹滿黏稠糖漿與肉桂香，口感紮實。建議外帶一份去康河邊配咖啡，這是劍橋學生流傳百年的正宗午茶吃法。它是這座城市最不可缺席的甜味回憶。",
-        map: "https://www.google.com/maps/search/?api=1&query=Fitzbillies+Trumpington+St"
+        time: "14:00", type: "Food", title: "Fitzbillies 百年肉桂捲",
+        open: "🕒 營業：08:00 - 18:00", price: "🍴 必吃：Chelsea Bun",
+        story: "<b>劍橋最有名的糖份補給：</b>自1920年開業，招牌 Chelsea Bun 裹滿肉桂與黏稠糖漿。導遊秘訣：外帶一份到康河邊吃，小心天鵝搶奪！這家老店曾因戰爭短暫歇業，如今是劍橋人的精神寄託。",
+        map: "https://www.google.com/maps/search/?api=1&query=Fitzbillies+Cambridge"
     },
     {
         time: "15:00", type: "Attraction", title: "Trinity College (三一學院)",
-        info: "🕒 10:00-16:00 | 🎫 £5",
-        story: "<b>天才的家與惡作劇：</b>門外右側是牛頓蘋果樹的後代。注意門上亨利八世雕像右手握的是學生惡作劇換成的『木椅腳』。詩人拜倫曾因禁止養狗而在此養了一隻熊抗議。這裡是產出諾貝爾獎得主最多的學術聖地，充滿叛逆的智慧。",
+        open: "🕒 開放：10:00 - 16:00", price: "🎫 門票：£5",
+        story: "<b>牛頓蘋果樹與拜倫的熊：</b>門口右側就是那棵傳奇蘋果樹。大門亨利八世右手拿的是『木椅腳』。詩人拜倫在此就讀時，因不滿禁止養狗，便養了一隻熊抗議。這裡是全世界諾貝爾獎密度最高的一塊土地。",
         map: "https://www.google.com/maps/search/?api=1&query=Trinity+College+Cambridge"
     },
     {
-        time: "16:30", type: "Experience", title: "Punting on the Cam (撐篙)",
-        info: "🕒 至日落 | 💰 £20-35",
-        story: "<b>穿梭嘆息與數學：</b>坐在船上會穿過『嘆息橋』與『數學橋』。前者因學生赴考場嘆息而得名，後者傳說由牛頓設計（雖是傳說但結構極美）。建議在 Quayside 上船，這是劍橋最唯美的電影場景還原。",
-        map: "https://www.google.com/maps/search/?api=1&query=Quayside+Punting+Cambridge"
+        time: "16:30", type: "Experience", title: "康河撐篙 (Punting)",
+        open: "🕒 營業：至日落", price: "💰 £20-35 (可現場喊價)",
+        story: "<b>穿梭數學橋與嘆息橋：</b>從 Quayside 碼頭上船。嘆息橋因學生赴考場嘆息而得名；數學橋則傳說由牛頓不使用釘子建成（實為精密的木製對稱結構）。這是在手機上拍出劍橋最美倒影的時刻。",
+        map: "https://www.google.com/maps/search/?api=1&query=Cambridge+Punting+Quayside"
     }
 ];
 
-// 初始化加載
-const container = document.getElementById('drag-container');
-
-function init() {
-    const saved = localStorage.getItem('cam_itinerary_2026_v4');
+// 初始化
+function loadData() {
+    const saved = localStorage.getItem('cambridge_v5_data');
     const data = saved ? JSON.parse(saved) : defaultData;
-    render(data);
-}
-
-function render(data) {
+    const container = document.getElementById('itinerary-list');
     container.innerHTML = '';
+    
     data.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'event';
         div.innerHTML = `
-            <div class="time-label" contenteditable="true" onblur="saveCurrentState()">${item.time}</div>
-            <div class="card" onclick="handleCardClick(event, this)">
-                <span class="type-tag" contenteditable="true" onblur="saveCurrentState()">${item.type}</span>
-                <div class="title" contenteditable="true" onblur="saveCurrentState()">${item.title}</div>
-                <div class="quick-info">
-                    <span class="status-tag" contenteditable="true" onblur="saveCurrentState()">${item.info}</span>
+            <div class="time-label">${item.time}</div>
+            <div class="card" onclick="toggleCard(this)">
+                <span class="type-tag" contenteditable="true">${item.type}</span>
+                <div class="title" contenteditable="true">${item.title}</div>
+                <div class="open-info" contenteditable="true">${item.open}</div>
+                <div class="price-info" style="margin-top:4px;">
+                    <span class="price-tag" contenteditable="true">${item.price}</span>
                 </div>
                 <div class="card-content">
-                    <div class="story-section" contenteditable="true" onblur="saveCurrentState()">${item.story}</div>
-                    <a href="${item.map}" class="btn btn-primary" target="_blank">🧭 開啟 Google Maps 導航</a>
+                    <div class="story-section" contenteditable="true">${item.story}</div>
+                    <a href="${item.map}" class="nav-btn" target="_blank">🧭 開啟地圖導航</a>
+                    ${isEditing ? `<button onclick="removeItem(this)" style="background:none;border:none;color:red;font-size:0.7rem;margin-top:10px;">❌ 刪除此項</button>` : ''}
                 </div>
             </div>
         `;
@@ -159,36 +152,83 @@ function render(data) {
     });
 }
 
-// 卡片點擊展開（避免編輯時展開）
-function handleCardClick(e, card) {
-    if (e.target.isContentEditable) return;
-    card.classList.toggle('active');
+function toggleMode() {
+    isEditing = !isEditing;
+    const btn = document.querySelector('.mode-btn');
+    const body = document.body;
+    const addBtn = document.getElementById('add-new-btn');
+    
+    if (isEditing) {
+        btn.innerText = "🔓 編輯模式";
+        btn.classList.add('unlocked');
+        body.classList.remove('read-only');
+        body.classList.add('editing-mode');
+        addBtn.style.display = 'block';
+        sortable.option("disabled", false);
+    } else {
+        btn.innerText = "🔒 鎖定模式";
+        btn.classList.remove('unlocked');
+        body.classList.add('read-only');
+        body.classList.remove('editing-mode');
+        addBtn.style.display = 'none';
+        sortable.option("disabled", true);
+        saveAll();
+    }
 }
 
-// 儲存狀態到 LocalStorage
-function saveCurrentState() {
+function saveAll() {
     const events = document.querySelectorAll('.event');
     const data = Array.from(events).map(ev => ({
         time: ev.querySelector('.time-label').innerText,
         type: ev.querySelector('.type-tag').innerText,
         title: ev.querySelector('.title').innerText,
-        info: ev.querySelector('.status-tag').innerText,
+        open: ev.querySelector('.open-info').innerText,
+        price: ev.querySelector('.price-tag').innerText,
         story: ev.querySelector('.story-section').innerHTML,
-        map: ev.querySelector('.btn').href
+        map: ev.querySelector('.nav-btn').href
     }));
-    localStorage.setItem('cam_itinerary_2026_v4', JSON.stringify(data));
+    localStorage.setItem('cambridge_v5_data', JSON.stringify(data));
 }
 
-// 啟動拖曳功能
-new Sortable(container, {
-    animation: 150,
-    ghostClass: 'sortable-ghost',
-    onEnd: function() {
-        saveCurrentState();
+function toggleCard(card) {
+    if (!isEditing) {
+        card.classList.toggle('active');
     }
+}
+
+function addNewItem() {
+    const container = document.getElementById('itinerary-list');
+    const div = document.createElement('div');
+    div.className = 'event';
+    div.innerHTML = `
+        <div class="time-label" contenteditable="true">12:00</div>
+        <div class="card">
+            <span class="type-tag" contenteditable="true">NEW</span>
+            <div class="title" contenteditable="true">新行程標題</div>
+            <div class="open-info" contenteditable="true">時間：09:00 - 18:00</div>
+            <div class="price-info"><span class="price-tag" contenteditable="true">£ 門票資訊</span></div>
+            <div class="card-content" style="display:block;">
+                <div class="story-section" contenteditable="true">請輸入深度介紹內容...</div>
+                <a href="#" class="nav-btn">🧭 設定地圖連結</a>
+                <button onclick="removeItem(this)" style="background:none;border:none;color:red;font-size:0.7rem;margin-top:10px;">❌ 刪除此項</button>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+}
+
+function removeItem(btn) {
+    btn.closest('.event').remove();
+}
+
+const sortable = new Sortable(document.getElementById('itinerary-list'), {
+    handle: '.time-label',
+    animation: 150,
+    disabled: true,
+    ghostClass: 'sortable-ghost'
 });
 
-window.onload = init;
+window.onload = loadData;
 </script>
 </body>
 </html>
