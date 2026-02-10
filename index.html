@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cambridge Journey OS v21</title>
+    <title>Cambridge Luxury OS v22</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         :root {
@@ -37,16 +37,34 @@
 
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
 
+        /* 卡片容器 */
         .card-wrapper { position: relative; margin-bottom: 30px; padding-left: 20px; border-left: 2px solid #E5E5E5; }
+        
+        /* 拖曳手把 (只在編輯模式顯示) */
+        .drag-handle { 
+            position: absolute; left: -35px; top: 25px; 
+            color: var(--zen-gold); font-size: 1.5rem; cursor: grab; 
+            display: none; padding: 10px; z-index: 10;
+        }
+        body.edit-mode .drag-handle { display: block; }
+
         .time-label {
             font-size: 0.85rem; font-weight: 700; margin-bottom: 12px; color: var(--text-main);
             position: relative; left: -28px; background: var(--app-bg); padding-right: 10px; width: fit-content;
         }
 
-        .card { background: var(--card-bg); border-radius: var(--radius); padding: 22px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); position: relative; }
+        .card {
+            background: var(--card-bg); border-radius: var(--radius);
+            padding: 22px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); position: relative;
+            transition: transform 0.2s;
+        }
         
-        .category { font-size: 0.6rem; font-weight: 800; letter-spacing: 2px; color: var(--zen-gold); text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .category {
+            font-size: 0.6rem; font-weight: 800; letter-spacing: 2px;
+            color: var(--zen-gold); text-transform: uppercase; margin-bottom: 10px; display: block;
+        }
         .category.food { color: var(--zen-rose); }
+
         .title { font-size: 1.25rem; font-weight: 700; margin: 0 0 15px 0; line-height: 1.3; }
 
         .info-grid { font-size: 0.8rem; color: var(--text-sub); display: grid; gap: 6px; }
@@ -56,37 +74,49 @@
         .details { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #F2F2F7; }
         .card-wrapper.open .details { display: block; }
 
-        .guide-body { font-size: 0.92rem; line-height: 1.8; color: #3A3A3C; }
-        .guide-body section { margin-bottom: 18px; }
-        .guide-body h4 { font-size: 0.95rem; font-weight: 700; color: #000; margin: 0 0 8px 0; }
-        .guide-body p { margin: 0 0 10px 0; }
-        .guide-body strong { color: var(--zen-gold); font-weight: 700; }
+        /* 深度導讀樣式 */
+        .guide-body { font-size: 0.92rem; line-height: 1.85; color: #3A3A3C; }
+        .guide-body section { margin-bottom: 20px; }
+        .guide-body h4 { font-size: 0.95rem; font-weight: 700; color: #000; margin: 0 0 8px 0; display: flex; align-items: center; }
+        .guide-body h4::before { content: '◈'; color: var(--zen-gold); margin-right: 8px; font-size: 0.8rem; }
+        .guide-body p { margin: 0 0 12px 0; }
+        .guide-body strong { color: #000; font-weight: 700; }
 
-        .point-speak { margin: 20px 0; background: #F9F9FB; border-radius: 12px; padding: 15px; border: 0.5px solid #EDEDF0; }
-        .speak-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid #E5E5E5; font-size: 0.85rem; }
+        /* 中英對照菜單 */
+        .point-speak {
+            margin: 20px 0; background: #F9F9FB; border-radius: 12px; padding: 15px; border: 0.5px solid #EDEDF0;
+        }
+        .speak-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 0.5px solid #E5E5E5; font-size: 0.9rem;
+        }
         .speak-row:last-child { border: none; }
+        .cn { font-weight: 600; color: var(--text-main); }
+        .en { color: var(--zen-gold); font-family: serif; font-style: italic; font-weight: 600; }
 
         .action-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; }
-        .btn-link { background: #F2F2F7; color: #007AFF; text-decoration: none; padding: 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-align: center; }
+        .btn-link {
+            background: #F2F2F7; color: #007AFF; text-decoration: none;
+            padding: 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-align: center;
+        }
 
-        .drag-handle { position: absolute; left: -45px; top: 40px; display: none; cursor: grab; color: var(--zen-gold); font-size: 1.2rem; padding: 10px; z-index: 10; }
-        body.edit-mode .drag-handle { display: block; }
-        
         .edit-ui { display: none; margin-top: 20px; background: #FFF9F9; padding: 15px; border-radius: 12px; }
         body.edit-mode .edit-ui { display: block; }
         .input-box { width: 100%; padding: 10px; border: 1px solid #DDD; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; }
 
-        .add-actions { display: none; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 30px 0; }
+        .add-actions { display: none; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 30px; }
         body.edit-mode .add-actions { display: grid; }
         .btn-add { background: #FFF; border: 1px solid #E5E5EA; padding: 15px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; color: var(--text-sub); cursor: pointer; }
+
+        .rainy-footer { margin-top: 40px; padding: 25px; border-radius: var(--radius); background: #FFF; border: 1px solid #E5E5EA; }
     </style>
 </head>
 <body class="read-mode">
 
 <header>
     <div>
-        <div style="font-size:0.55rem; color:var(--text-sub); letter-spacing:3px;">SYSTEM v21.FINAL</div>
-        <div class="header-title">CAMBRIDGE ONE DAY</div>
+        <div style="font-size:0.55rem; color:var(--text-sub); letter-spacing:3px;">SYSTEM v22.FIXED</div>
+        <div class="header-title">CAMBRIDGE LUXURY</div>
     </div>
     <button class="lock-btn" id="lockBtn" onclick="toggleMode()">🔒 LOCK</button>
 </header>
@@ -96,102 +126,167 @@
         </div>
 
     <div class="add-actions">
-        <button class="btn-add" onclick="addItem('Attraction')">＋ ATTRACTION</button>
-        <button class="btn-add" onclick="addItem('Food')">＋ FOOD</button>
-        <button class="btn-add" onclick="addItem('Transport')">＋ TRANSPORT</button>
-        <button class="btn-add" onclick="addItem('Experience')">＋ EXPERIENCE</button>
+        <button class="btn-add" onclick="addItem('Attraction')">＋ 景點</button>
+        <button class="btn-add" onclick="addItem('Food')">＋ 餐廳</button>
+        <button class="btn-add" onclick="addItem('Transport')">＋ 交通</button>
+        <button class="btn-add" onclick="addItem('Experience')">＋ 體驗</button>
     </div>
 
-    <div class="card" style="margin-top:20px; border: 1px dashed var(--zen-gold);">
-        <div class="category">Rainy Day Plan</div>
+    <div class="rainy-footer">
+        <div style="font-size:0.75rem; font-weight:800; color:var(--zen-gold); margin-bottom:12px;">☔ 雨天備案</div>
         <div class="guide-body" style="font-size:0.85rem;">
-            劍橋室內首選 <strong>Sedgwick Museum</strong>，擁有壯觀的恐龍化石。若需購物與避雨，可前往 <strong>The Grafton Center</strong>。
+            劍橋天氣多變，若遇大雨可前往 <strong>Sedgwick Museum (塞奇威克地球科學博物館)</strong>，這裡有完整的恐龍化石展示且免費開放。購物避雨則推薦 <strong>The Grafton</strong> 或 <strong>Grand Arcade</strong> 室內商場。
         </div>
     </div>
 </div>
 
 <script>
 let isEditing = false;
-const defaultData = [
+let sortableInstance = null;
+
+const initialData = [
     {
         time: "09:30", type: "Transport", title: "London King's Cross ➜ Cambridge",
-        open: "首班 05:00 | 15分/班", price: "£20-45", 
-        story: `<section><h4>交通魔鬼細節</h4><p>搭乘 <strong>Great Northern</strong> 或 <strong>LNER</strong> 直達車。抵達車站後，出口左側 <strong>Stop 8</strong> 搭乘 <strong>Universal Bus (U Line)</strong>。</p></section>
-                <section><h4>精確導航</h4><p><strong>上車站：</strong>Cambridge Station Stop 8<br><strong>下車站：</strong>Fitzwilliam Museum</p></section>`,
-        map: "https://www.google.com/maps/search/?api=1&query=Cambridge+Station", web: "https://www.nationalrail.co.uk/", isFood: false
+        open: "首班 05:00 | 15分/班", price: "約 £20-45", 
+        story: `<div class="guide-body">
+            <section><h4>交通細節與攻略</h4><p>請務必從倫敦 <strong>London King's Cross</strong> 搭乘 <strong>Great Northern</strong> 或 <strong>LNER</strong> 的直達車（Direct）。車程約 50 分鐘。抵達 Cambridge Station 後，轉乘 Universal Bus。</p></section>
+            <section><h4>公車魔鬼細節</h4>
+                <p><strong>路線號碼：</strong>U Line (Universal Bus)<br>
+                <strong>上車站：</strong>火車站出口左側 <strong>Stop 8</strong><br>
+                <strong>下車站：</strong><strong>Fitzwilliam Museum</strong> 站（下車即達）。</p>
+            </section>
+        </div>`,
+        map: "https://www.google.com/maps/dir/London+King's+Cross/Cambridge+Station", web: "https://www.nationalrail.co.uk/", isFood: false,
+        menu: []
     },
     {
         time: "10:30", type: "Attraction", title: "菲茨威廉博物館 (Fitzwilliam Museum)",
-        open: "10:00 - 17:00 (週一休)", price: "免費 (官網預約)",
-        story: `<section><h4>背景歷史</h4><p>創立於 1816 年，由菲茨威廉子爵遺贈。這座<strong>新古典主義建築</strong>是劍橋大學的藝術與考古中樞。</p></section>
-                <section><h4>必看細節</h4><p><strong>Founder's Entrance 圓廳：</strong>進入後抬頭看，那是極其華麗的大理石穹頂。<strong>位置：</strong>一樓大廳中央。</p></section>
-                <section><h4>趣聞軼事</h4><p>館內藏有一件<strong>古埃及石棺</strong>，其精緻程度與大英博物館收藏不相上下。</p></section>`,
-        map: "https://www.google.com/maps/search/?api=1&query=Fitzwilliam+Museum", web: "https://fitzmuseum.cam.ac.uk/", isFood: false
+        open: "10:00 - 17:00 (週一休)", price: "免費 (建議預約)",
+        story: `<div class="guide-body">
+            <section><h4>背景歷史</h4><p>創立於 1816 年，由菲茨威廉子爵遺贈建立。這座宏偉的<strong>新古典主義建築</strong>被譽為「小型大英博物館」，是劍橋大學最重要的藝術與考古收藏庫。</p></section>
+            <section><h4>必看細節</h4><p><strong>Founder's Entrance (圓廳)：</strong>進入後請務必抬頭，欣賞那壯觀的鍍金馬賽克穹頂與對稱的巴洛克風格樓梯。</p></section>
+            <section><h4>趣聞軼事</h4><p>館內藏有一具極為精美的古埃及石棺，其保存狀況甚至優於許多開羅博物館的藏品。此外，這裡也是許多劍橋哲學系學生尋找靈感的秘密基地。</p></section>
+        </div>`,
+        map: "https://www.google.com/maps/search/?api=1&query=Fitzwilliam+Museum+Cambridge", web: "https://fitzmuseum.cam.ac.uk/", isFood: false,
+        menu: []
     },
     {
-        time: "12:00", type: "Food", title: "Fitzbillies (百年肉桂捲)",
-        open: "08:00 - 18:00", price: "Chelsea Bun £4.5",
-        story: `<section><h4>美食導覽</h4><p>自 1920 年開業。必點菜名 <strong>Chelsea Bun (切爾西肉桂捲)</strong>，其焦糖糖漿厚實且紮實，是劍橋學子的共同記憶。</p></section>`,
-        map: "https://www.google.com/maps/search/?api=1&query=Fitzbillies+Trumpington+St", web: "https://www.fitzbillies.com/", isFood: true
+        time: "12:00", type: "Food", title: "Fitzbillies (Century-old Bakery)",
+        open: "08:00 - 18:00", price: "人均 £10-15",
+        story: `<div class="guide-body">
+            <section><h4>餐廳歷史</h4><p>自 1920 年開業以來，這裡就是劍橋的靈魂。曾因經營困難面臨倒閉，但在史蒂芬·弗萊 (Stephen Fry) 等名人的呼籲與支持下被挽救，讓這份百年的甜蜜得以延續。</p></section>
+            <section><h4>美食導覽</h4><p>這裡的肉桂捲以「極度黏稠」聞名。與一般乾爽的肉桂捲不同，它的表面覆蓋了厚厚一層焦糖糖漿，口感紮實且濕潤。</p></section>
+        </div>`,
+        map: "https://www.google.com/maps/search/?api=1&query=Fitzbillies+Trumpington+Street", web: "https://www.fitzbillies.com/", isFood: true,
+        menu: [
+            {cn: "招牌切爾西肉桂捲", en: "Chelsea Bun"},
+            {cn: "傳統英式司康套餐", en: "Cream Tea"}
+        ]
     },
     {
         time: "13:00", type: "Attraction", title: "聖體鐘 (Corpus Clock)",
-        open: "24 小時展示", price: "免費",
-        story: `<section><h4>設計背景</h4><p>由約翰·C·泰勒構思，2008年由<strong>史蒂芬·霍金</strong>揭幕。鐘面為24K鍍金不鏽鋼，無指針，由LED藍光顯示時間。</p></section>
-                <section><h4>最大視覺焦點</h4><p>鐘頂的金屬蚱蜢名為<strong>「時間吞吃者」(Chronophage)</strong>，象徵時間不斷被吞噬。<strong>寓意：</strong>底座刻有「這世界和其上的情慾都要過去」。</p></section>`,
-        map: "https://www.google.com/maps/search/?api=1&query=Corpus+Clock", web: "", isFood: false
+        open: "24H (戶外展示)", price: "免費",
+        story: `<div class="guide-body">
+            <section><h4>設計背景</h4><p>由發明家兼企業家約翰·C·泰勒（John C. Taylor）構思並資助，2008年9月19日由著名物理學家史蒂芬·霍金揭幕。</p></section>
+            <section><h4>特色外觀</h4><p>鐘面為24克拉鍍金的不鏽鋼圓盤，直徑約1.5米。沒有傳統的時針和數字，而是採用藍色發光二極體（LED）顯示時間。</p></section>
+            <section><h4>最大視覺焦點</h4><p>鐘頂有一隻像蚱蜢或蝗蟲的金屬雕塑，創作者稱之為<strong>「時間吞吃者」（Chronophage）</strong>，象徵時間不斷被吞噬，提醒人們時間的流逝。</p></section>
+            <section><h4>寓意</h4><p>鐘下方刻有拉丁文「mundus transit et concupiscentia eius」，出自聖經約翰一書2章17節，意為「這世界和其上的情慾都要過去」。作品以戲劇性的方式強調時間無法逆轉、須珍惜當下。</p></section>
+        </div>`,
+        map: "https://www.google.com/maps/search/?api=1&query=Corpus+Clock+Cambridge", web: "", isFood: false,
+        menu: []
     },
     {
         time: "14:00", type: "Attraction", title: "國王學院 (King's College)",
-        open: "10:30 - 15:30", price: "£15",
-        story: `<section><h4>建築風格</h4><p>1441年由亨利六世創辦。禮拜堂擁有<strong>世界上最大的石造扇形拱頂</strong>。</p></section>
-                <section><h4>必看細節</h4><p><strong>徐志摩紀念石：</strong>位於康河畔草地。<strong>電影連動：</strong>《愛的萬物論》重要取景地。</p></section>`,
-        map: "https://www.google.com/maps/search/?api=1&query=Kings+College+Chapel", web: "https://www.kings.cam.ac.uk/", isFood: false
+        open: "10:30 - 15:30", price: "£15 (需官網預約)",
+        story: `<div class="guide-body">
+            <section><h4>背景歷史</h4><p>1441年由亨利六世創辦。禮拜堂內部擁有<strong>世界上最大的石造扇形拱頂 (Fan Vault)</strong>，其結構之精巧，幾個世紀以來讓建築師們驚嘆不已。</p></section>
+            <section><h4>必看細節</h4><p><strong>徐志摩紀念石：</strong>位於過橋後的康河畔草地，白色大理石上刻有《再別康橋》的詩句。<strong>祭壇畫：</strong>魯本斯的《三博士來朝》懸掛於禮拜堂東端。</p></section>
+            <section><h4>電影連動</h4><p><strong>《愛的萬物論》：</strong>電影中霍金與 Jane 在舞會後漫步的浪漫場景，以及霍金思考宇宙奧秘的背景，皆取景於此。</p></section>
+        </div>`,
+        map: "https://www.google.com/maps/search/?api=1&query=King's+College+Cambridge", web: "https://www.kings.cam.ac.uk/", isFood: false,
+        menu: []
     },
     {
         time: "15:30", type: "Attraction", title: "聖三一學院 (Trinity College)",
         open: "10:00 - 16:00", price: "£5",
-        story: `<section><h4>趣聞軼事</h4><p><strong>牛頓蘋果樹：</strong>位於正門右側。<strong>木椅腳：</strong>正門亨利八世像右手拿的是惡作劇留下的木椅腳。</p></section>
-                <section><h4>冷知識</h4><p>詩人<strong>拜倫</strong>曾在此養過一隻熊，因為校規只禁止養狗，卻沒禁止熊。</p></section>`,
-        map: "https://www.google.com/maps/search/?api=1&query=Trinity+College+Cambridge", web: "https://www.trin.cam.ac.uk/", isFood: false
+        story: `<div class="guide-body">
+            <section><h4>背景歷史</h4><p>由亨利八世於 1546 年創立，是劍橋規模最大、財力最雄厚的學院，培育了包括牛頓、拜倫在內的 30 多位諾貝爾獎得主。</p></section>
+            <section><h4>趣聞軼事</h4><p><strong>木椅腳權杖：</strong>正門上方的亨利八世雕像，右手的黃金權杖被學生惡作劇換成了一根木椅腳，至今仍保留原樣。</p></section>
+            <section><h4>必看細節</h4><p><strong>牛頓蘋果樹：</strong>位於正門右側草坪，是從啟發牛頓萬有引力那棵樹上嫁接過來的直系後代。</p></section>
+        </div>`,
+        map: "https://www.google.com/maps/search/?api=1&query=Trinity+College+Cambridge", web: "https://www.trin.cam.ac.uk/", isFood: false,
+        menu: []
     },
     {
         time: "16:30", type: "Experience", title: "康河划船 (Punting)",
-        open: "至日落", price: "£20-35",
-        story: `<section><h4>必看細節</h4><p>從水面穿過<strong>嘆息橋 (Bridge of Sighs)</strong>與<strong>數學橋 (Mathematical Bridge)</strong>。建議選擇有學生導覽的船隻。</p></section>`,
-        map: "https://www.google.com/maps/search/?api=1&query=Cambridge+Punting", web: "", isFood: false
+        open: "09:00 - 日落", price: "£20-35",
+        story: `<div class="guide-body">
+            <section><h4>體驗導覽</h4><p>乘坐平底船穿梭於學院之間，是欣賞「學院後花園」(The Backs) 的最佳方式。建議選擇有司機 (Chauffeur) 的導覽服務，聆聽劍橋的歷史八卦。</p></section>
+            <section><h4>必看細節</h4><p><strong>嘆息橋 (Bridge of Sighs)：</strong>位於聖約翰學院，因學生考場失意發出的嘆息而得名。<br><strong>數學橋 (Mathematical Bridge)：</strong>位於王后學院，傳說由牛頓設計且未使用任何螺絲（實為威廉·埃瑟里奇設計，且使用了螺絲）。</p></section>
+        </div>`,
+        map: "https://www.google.com/maps/search/?api=1&query=Scudamore's+Punting+Cambridge", web: "", isFood: false,
+        menu: []
     },
     {
-        time: "17:45", type: "Food", title: "Jack's Gelato",
-        open: "11:00 - 22:00", price: "£3.5 起",
-        story: `<section><h4>必點菜名</h4><p><strong>Sea Salt Caramel (海鹽焦糖)</strong>、<strong>Roasted Almond (烤杏仁)</strong>。口感滑順，口味具層次感。</p></section>`,
-        map: "https://www.google.com/maps/search/?api=1&query=Jacks+Gelato+Cambridge", web: "", isFood: true
+        time: "17:45", type: "Food", title: "Jack's Gelato (排隊名店)",
+        open: "11:00 - 22:00", price: "£3.5 - £5",
+        story: `<div class="guide-body">
+            <section><h4>推薦理由</h4><p>這家店是由前高級餐廳廚師創立，強調使用純天然與高品質原料。即使在冬天，店門口也常大排長龍，被譽為劍橋最好吃的冰淇淋。</p></section>
+            <section><h4>必點口味</h4><p>他們的口味每日輪替，但招牌的「海鹽焦糖」與「烤杏仁」是絕對不能錯過的經典。</p></section>
+        </div>`,
+        map: "https://www.google.com/maps/search/?api=1&query=Jack's+Gelato+Cambridge", web: "", isFood: true,
+        menu: [
+            {cn: "海鹽焦糖", en: "Dark Chocolate & Sea Salt"},
+            {cn: "烤杏仁", en: "Roasted Almond"}
+        ]
     },
     {
         time: "19:00", type: "Food", title: "老鷹酒吧 (The Eagle)",
-        open: "11:00 - 23:00", price: "£15-22",
-        story: `<section><h4>背景歷史</h4><p>1953 年克里克在此宣佈發現 <strong>DNA 雙螺旋結構</strong>。</p></section>
-                <section><h4>必看細節</h4><p><strong>RAF Bar 天花板：</strong>二戰飛行員用蠟燭燻出的番號。<strong>美食必點：Eagle DNA Ale</strong>、<strong>Fish & Chips</strong>。</p></section>`,
-        map: "https://www.google.com/maps/search/?api=1&query=The+Eagle+Cambridge", web: "https://www.greeneking.co.uk/pubs/cambridgeshire/eagle", isFood: true
+        open: "11:00 - 23:00", price: "主餐 £15-20",
+        story: `<div class="guide-body">
+            <section><h4>背景歷史</h4><p>1953 年 2 月 28 日，法蘭西斯·克里克 (Francis Crick) 衝進這家酒吧，宣布他與詹姆斯·華生 (James Watson)「發現了生命的秘密」，也就是 DNA 雙螺旋結構。</p></section>
+            <section><h4>必看細節</h4><p><strong>RAF Bar (空軍酒吧)：</strong>走到酒吧後方，抬頭看天花板。那是二戰期間皇家空軍飛行員用打火機燒出的名字與番號，是珍貴的歷史印記。</p></section>
+        </div>`,
+        map: "https://www.google.com/maps/search/?api=1&query=The+Eagle+Pub+Cambridge", web: "https://www.greeneking.co.uk/pubs/cambridgeshire/eagle", isFood: true,
+        menu: [
+            {cn: "老鷹DNA特色啤酒", en: "Eagle DNA Ale"},
+            {cn: "傳統炸魚薯條", en: "Fish & Chips"}
+        ]
     }
 ];
 
+// 初始化與渲染
 function init() {
-    const saved = localStorage.getItem('cam_v21_final');
-    render(saved ? JSON.parse(saved) : defaultData);
+    const saved = localStorage.getItem('cam_v22_data');
+    render(saved ? JSON.parse(saved) : initialData);
 }
 
 function render(data) {
     const list = document.getElementById('itinerary-list');
     list.innerHTML = '';
-    data.forEach(item => {
+    
+    data.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'card-wrapper';
+        div.dataset.index = index; // 用於排序定位
+
         const foodClass = item.isFood ? 'food' : '';
+        const webBtn = item.web ? `<a href="${item.web}" class="btn-link" target="_blank">🌐 官方網站</a>` : '';
+        
+        // 構建菜單 HTML
+        let menuHtml = '';
+        if (item.menu && item.menu.length > 0) {
+            menuHtml = `<div class="point-speak">`;
+            item.menu.forEach(dish => {
+                menuHtml += `<div class="speak-row"><span class="cn">${dish.cn}</span><span class="en">${dish.en}</span></div>`;
+            });
+            menuHtml += `</div>`;
+        }
+
         div.innerHTML = `
             <div class="drag-handle">⠿</div>
             <div class="time-label editable-node" data-field="time">${item.time}</div>
-            <div class="card" onclick="handleCardToggle(this)">
+            <div class="card" onclick="handleCardClick(this)">
                 <span class="category ${foodClass} editable-node" data-field="type">${item.type}</span>
                 <div class="title editable-node" data-field="title">${item.title}</div>
                 <div class="info-grid">
@@ -200,83 +295,122 @@ function render(data) {
                 </div>
                 <div class="details">
                     <div class="guide-body editable-node" data-field="story">${item.story}</div>
+                    ${menuHtml}
                     <div class="edit-ui">
-                        <input type="text" class="input-box map-val" value="${item.map}" placeholder="Google Map Link">
-                        <input type="text" class="input-box web-val" value="${item.web}" placeholder="Official Link">
-                        <button onclick="delItem(this)" style="color:red; border:none; background:none; cursor:pointer;">REMOVE</button>
+                        <label style="font-size:0.7rem; color:#888;">Google Map URL</label>
+                        <input type="text" class="input-box map-val" value="${item.map}">
+                        <label style="font-size:0.7rem; color:#888;">Website URL</label>
+                        <input type="text" class="input-box web-val" value="${item.web}">
+                        <button onclick="delItem(this)" style="color:red; border:none; background:none; font-weight:700; margin-top:5px;">🗑 刪除此卡片</button>
                     </div>
                     <div class="action-group">
-                        <a href="${item.map}" class="btn-link" target="_blank" onclick="event.stopPropagation()">🗺️ Google Maps</a>
-                        ${item.web ? `<a href="${item.web}" class="btn-link" target="_blank" onclick="event.stopPropagation()">🌐 Official</a>` : ''}
+                        <a href="${item.map}" class="btn-link" target="_blank">🗺️ Google Maps</a>
+                        ${webBtn}
                     </div>
                 </div>
             </div>`;
         list.appendChild(div);
     });
-    applyLock();
+    
+    applyLockState();
+    initSortable(); // 每次渲染後重新綁定排序
 }
 
-function handleCardToggle(card) {
-    if(!isEditing) card.closest('.card-wrapper').classList.toggle('open');
-}
-
-function applyLock() {
-    document.querySelectorAll('.editable-node').forEach(n => {
-        if (isEditing) {
-            n.setAttribute('contenteditable', 'true');
-            n.style.pointerEvents = "auto";
-        } else {
-            n.removeAttribute('contenteditable');
-            n.style.pointerEvents = "none";
+function initSortable() {
+    const el = document.getElementById('itinerary-list');
+    if (sortableInstance) sortableInstance.destroy(); // 防止重複綁定
+    
+    sortableInstance = new Sortable(el, {
+        handle: '.drag-handle', // 指定只有金色手把可以拖曳
+        animation: 150,
+        disabled: !isEditing, // 根據模式啟用/禁用
+        onEnd: function (evt) {
+            saveToLocal(); // 拖曳結束立刻儲存新順序
         }
     });
+}
+
+function handleCardClick(card) {
+    if(!isEditing) {
+        card.closest('.card-wrapper').classList.toggle('open');
+    }
 }
 
 function toggleMode() {
     isEditing = !isEditing;
     const btn = document.getElementById('lockBtn');
     document.body.className = isEditing ? 'edit-mode' : 'read-mode';
+    
     if(isEditing) {
-        btn.innerText = "🔓 UNLOCK"; btn.classList.add('unlocked');
-        sortable.option("disabled", false);
+        btn.innerText = "🔓 UNLOCK"; 
+        btn.classList.add('unlocked');
+        if(sortableInstance) sortableInstance.option("disabled", false);
     } else {
-        btn.innerText = "🔒 LOCK"; btn.classList.remove('unlocked');
-        sortable.option("disabled", true);
-        save();
+        btn.innerText = "🔒 LOCK"; 
+        btn.classList.remove('unlocked');
+        if(sortableInstance) sortableInstance.option("disabled", true);
+        saveToLocal(); // 鎖定時也觸發一次儲存
     }
-    applyLock();
+    applyLockState();
 }
 
-function save() {
+function applyLockState() {
+    document.querySelectorAll('.editable-node').forEach(n => {
+        if (isEditing) {
+            n.setAttribute('contenteditable', 'true');
+            n.style.pointerEvents = "auto";
+            n.style.borderBottom = "1px dashed #DDD";
+        } else {
+            n.removeAttribute('contenteditable');
+            n.style.pointerEvents = "none"; // 物理穿透
+            n.style.borderBottom = "none";
+        }
+    });
+}
+
+function saveToLocal() {
     const cards = document.querySelectorAll('.card-wrapper');
-    const data = Array.from(cards).map(c => ({
-        time: c.querySelector('[data-field="time"]').innerText,
-        type: c.querySelector('[data-field="type"]').innerText,
-        title: c.querySelector('[data-field="title"]').innerText,
-        open: c.querySelector('[data-field="open"]').innerText,
-        price: c.querySelector('[data-field="price"]').innerText,
-        story: c.querySelector('[data-field="story"]').innerHTML,
-        map: c.querySelector('.map-val').value,
-        web: c.querySelector('.web-val').value,
-        isFood: c.querySelector('.category').classList.contains('food')
-    }));
-    localStorage.setItem('cam_v21_final', JSON.stringify(data));
-}
+    const newData = Array.from(cards).map(c => {
+        const cnNodes = c.querySelectorAll('.point-speak .speak-row');
+        const menuArr = Array.from(cnNodes).map(row => ({
+            cn: row.querySelector('.cn').innerText,
+            en: row.querySelector('.en').innerText
+        }));
 
-const sortable = new Sortable(document.getElementById('itinerary-list'), { 
-    handle: '.drag-handle', animation: 200, disabled: true,
-    onEnd: function() { save(); }
-});
+        return {
+            time: c.querySelector('[data-field="time"]').innerText,
+            type: c.querySelector('[data-field="type"]').innerText,
+            title: c.querySelector('[data-field="title"]').innerText,
+            open: c.querySelector('[data-field="open"]').innerText,
+            price: c.querySelector('[data-field="price"]').innerText,
+            story: c.querySelector('[data-field="story"]').innerHTML,
+            map: c.querySelector('.map-val').value,
+            web: c.querySelector('.web-val').value,
+            isFood: c.querySelector('.category').classList.contains('food'),
+            menu: menuArr
+        };
+    });
+    localStorage.setItem('cam_v22_data', JSON.stringify(newData));
+}
 
 function addItem(type) {
-    const newItem = { time: "12:00", type: type, title: "New Spot", open: "09:00-18:00", price: "£0", story: "<section><h4>歷史</h4><p>描述...</p></section>", map: "https://google.com", web: "", isFood: type === 'Food' };
-    const curr = JSON.parse(localStorage.getItem('cam_v21_final')) || defaultData;
+    const newItem = { 
+        time: "12:00", type: type, title: "新地點", open: "09:00 - 17:00", price: "£0", 
+        story: "<section><h4>介紹</h4><p>點擊解鎖以編輯內容...</p></section>", 
+        map: "https://www.google.com/maps", web: "", isFood: type === 'Food', menu: [] 
+    };
+    const curr = JSON.parse(localStorage.getItem('cam_v22_data')) || initialData;
     curr.push(newItem);
-    localStorage.setItem('cam_v21_final', JSON.stringify(curr));
+    localStorage.setItem('cam_v22_data', JSON.stringify(curr));
     render(curr);
 }
 
-function delItem(btn) { if(confirm('Remove?')) { btn.closest('.card-wrapper').remove(); save(); } }
+function delItem(btn) {
+    if(confirm('確定要刪除此行程卡片嗎？')) {
+        btn.closest('.card-wrapper').remove();
+        saveToLocal();
+    }
+}
 
 window.onload = init;
 </script>
