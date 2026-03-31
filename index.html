@@ -416,3 +416,270 @@ window.onload = init;
 </script>
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Edinburgh Journey v23</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        :root {
+            --app-bg: #F4F5F7;
+            --card-bg: #FFFFFF;
+            --text-main: #2C2C2E;
+            --text-sub: #8E8E93;
+            --zen-gold: #A67C52;
+            --zen-rose: #D57E7E;
+            --radius: 16px;
+        }
+        body { font-family: -apple-system, "Noto Sans TC", sans-serif; background-color: var(--app-bg); color: var(--text-main); margin: 0; padding-bottom: 80px; }
+        header { position: sticky; top: 0; z-index: 1000; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); padding: 20px; border-bottom: 0.5px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .header-title { font-size: 0.9rem; font-weight: 700; letter-spacing: 2px; }
+        .lock-btn { background: #000; color: #FFF; border: none; padding: 8px 18px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+        .lock-btn.unlocked { background: var(--zen-rose); }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+        .day-header { font-size: 1.2rem; font-weight: 800; margin: 30px 0 15px 10px; color: var(--zen-gold); border-bottom: 2px solid var(--zen-gold); width: fit-content; }
+        .card-wrapper { position: relative; margin-bottom: 25px; padding-left: 20px; border-left: 2px solid #E5E5E5; }
+        .drag-handle { position: absolute; left: -35px; top: 25px; color: var(--zen-gold); font-size: 1.5rem; cursor: grab; display: none; padding: 10px; z-index: 10; }
+        body.edit-mode .drag-handle { display: block; }
+        .time-label { font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main); position: relative; left: -28px; background: var(--app-bg); padding-right: 10px; width: fit-content; }
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); position: relative; }
+        .category { font-size: 0.6rem; font-weight: 800; letter-spacing: 2px; color: var(--zen-gold); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .category.food { color: var(--zen-rose); }
+        .title { font-size: 1.15rem; font-weight: 700; margin: 0 0 12px 0; line-height: 1.3; }
+        .info-grid { font-size: 0.75rem; color: var(--text-sub); display: grid; gap: 4px; }
+        .info-row { display: flex; }
+        .info-row b { color: var(--text-main); width: 80px; }
+        .details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #F2F2F7; }
+        .card-wrapper.open .details { display: block; }
+        .guide-body { font-size: 0.9rem; line-height: 1.7; color: #3A3A3C; }
+        .guide-body section { margin-bottom: 15px; }
+        .guide-body h4 { font-size: 0.9rem; font-weight: 700; color: #000; margin: 0 0 5px 0; }
+        .guide-body h4::before { content: '◈ '; color: var(--zen-gold); }
+        .point-speak { margin: 15px 0; background: #F9F9FB; border-radius: 12px; padding: 12px; border: 0.5px solid #EDEDF0; }
+        .speak-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid #E5E5E5; font-size: 0.85rem; }
+        .speak-row:last-child { border: none; }
+        .cn { font-weight: 600; }
+        .en { color: var(--zen-gold); font-style: italic; font-size: 0.8rem; }
+        .action-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 20px; }
+        .btn-link { background: #F2F2F7; color: #007AFF; text-decoration: none; padding: 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; text-align: center; }
+        body.edit-mode .editable-node { border-bottom: 1px dashed #CCC; }
+    </style>
+</head>
+<body class="read-mode">
+
+<header>
+    <div>
+        <div style="font-size:0.5rem; color:var(--text-sub); letter-spacing:2px;">EDINBURGH OS v23</div>
+        <div class="header-title">5/5 - 5/7 三日行程</div>
+    </div>
+    <button class="lock-btn" id="lockBtn" onclick="toggleMode()">🔒 LOCK</button>
+</header>
+
+<div class="container">
+    <div id="itinerary-list">
+        <div class="day-header">Day 1: 5/5 (Tue) Arrival</div>
+        
+        <div class="card-wrapper">
+            <div class="drag-handle">⠿</div>
+            <div class="time-label editable-node">Morning</div>
+            <div class="card" onclick="toggleCard(this)">
+                <span class="category">Transport</span>
+                <div class="title editable-node">London ➜ Edinburgh</div>
+                <div class="info-grid">
+                    <div class="info-row"><b>HOTEL</b> <span class="editable-node">智選假日酒店 (Holiday Inn Express)</span></div>
+                    <div class="info-row"><b>STATION</b> <span class="editable-node">Waverley Station</span></div>
+                </div>
+                <div class="details">
+                    <div class="guide-body editable-node">
+                        <section><h4>交通攻略</h4><p>搭乘 LNER 直達火車由 London King's Cross 出發。抵達後步行至酒店放行李。</p></section>
+                    </div>
+                    <div class="action-group">
+                        <a href="http://maps.google.com/?q=Holiday+Inn+Express+Edinburgh+City+Centre" class="btn-link" target="_blank">🗺️ 飯店導航</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-wrapper">
+            <div class="drag-handle">⠿</div>
+            <div class="time-label editable-node">15:00</div>
+            <div class="card" onclick="toggleCard(this)">
+                <span class="category">Attraction</span>
+                <div class="title editable-node">司各特紀念塔 (Scott Monument)</div>
+                <div class="info-grid">
+                    <div class="info-row"><b>打卡點</b> <span class="editable-node">Waverlay Bridge 方向</span></div>
+                    <div class="info-row"><b>必看</b> <span class="editable-node">聖吉爾斯大教堂頂部</span></div>
+                </div>
+                <div class="details">
+                    <div class="guide-body editable-node">
+                        <section><h4>背景歷史</h4><p>為了紀念蘇格蘭大文豪沃爾特·司各特爵士，這座維多利亞哥德式建築於 1844 年落成。外觀因長年受煙塵燻陶，呈現標誌性的漆黑色。</p></section>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-wrapper">
+            <div class="drag-handle">⠿</div>
+            <div class="time-label editable-node">16:45 (已預約)</div>
+            <div class="card" onclick="toggleCard(this)">
+                <span class="category food">Food</span>
+                <div class="title editable-node">Dishoom 印度料理</div>
+                <div class="info-grid">
+                    <div class="info-row"><b>STATUS</b> <span class="editable-node">已預約 16:45</span></div>
+                </div>
+                <div class="details">
+                    <div class="point-speak">
+                        <div class="speak-row"><span class="cn">秋葵薯條</span><span class="en">Okra Fries</span></div>
+                        <div class="speak-row"><span class="cn">紅寶石雞肉咖哩</span><span class="en">Chicken Ruby</span></div>
+                        <div class="speak-row"><span class="cn">招牌黑豆泥</span><span class="en">House Black Daal</span></div>
+                        <div class="speak-row"><span class="cn">大蒜烤餅</span><span class="en">Garlic Naan</span></div>
+                        <div class="speak-row"><span class="cn">芒果優格奶昔</span><span class="en">Mango Lassi</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-wrapper">
+            <div class="drag-handle">⠿</div>
+            <div class="time-label editable-node">18:50 (已預約)</div>
+            <div class="card" onclick="toggleCard(this)">
+                <span class="category">Experience</span>
+                <div class="title editable-node">瑪麗金街 (The Real Mary King's Close)</div>
+                <div class="info-grid">
+                    <div class="info-row"><b>TICKET</b> <span class="editable-node">£75 (含預約)</span></div>
+                    <div class="info-row"><b>RULE</b> <span class="editable-node">禁止拍照錄影</span></div>
+                </div>
+                <div class="details">
+                    <div class="guide-body editable-node">
+                        <section><h4>必做清單</h4><p>1. 務必先下載專屬 App。<br>2. 深度導覽愛丁堡 17 世紀被埋沒在城市下的真實街道與鼠疫傳聞。</p></section>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-header">Day 2: 5/6 (Wed) Castle & Old Town</div>
+
+        <div class="card-wrapper">
+            <div class="drag-handle">⠿</div>
+            <div class="time-label editable-node">09:00</div>
+            <div class="card" onclick="toggleCard(this)">
+                <span class="category">Attraction</span>
+                <div class="title editable-node">迪恩村 (Dean Village)</div>
+                <div class="info-grid">
+                    <div class="info-row"><b>拍攝位</b> <span class="editable-node">水邊橋上</span></div>
+                </div>
+                <div class="details">
+                    <div class="guide-body editable-node"><section><h4>導讀</h4><p>曾是磨坊村落，現為愛丁堡最寧靜迷人的住宅區。建議一早前往，避開人潮享受清晨的光線。</p></section></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-wrapper">
+            <div class="drag-handle">⠿</div>
+            <div class="time-label editable-node">11:00 (已預約)</div>
+            <div class="card" onclick="toggleCard(this)">
+                <span class="category">Attraction</span>
+                <div class="title editable-node">愛丁堡城堡 (Edinburgh Castle)</div>
+                <div class="info-grid">
+                    <div class="info-row"><b>ENTRY</b> <span class="editable-node">11:00 - 11:30 (需安檢)</span></div>
+                    <div class="info-row"><b>TICKET</b> <span class="editable-node">£70.5 (已存 Apple Wallet)</span></div>
+                </div>
+                <div class="details">
+                    <div class="guide-body editable-node">
+                        <section><h4>攻城攻略路線</h4>
+                        <p>1. 入口 → 2. <b>直奔皇冠展廳 (命運之石)</b> → 3. 聖瑪格麗特禮拜堂 → 4. 大廳 → 5. <b>一點鐘大砲 (13:00 準時)</b> → 6. 戰爭監獄。</p></section>
+                        <section><h4>必看細節</h4><p>羅斯噴泉 (Ross Fountain) 位於城堡下的花園，是拍攝城堡全景的最佳前置景點。</p></section>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-wrapper">
+            <div class="drag-handle">⠿</div>
+            <div class="time-label editable-node">15:00</div>
+            <div class="card" onclick="toggleCard(this)">
+                <span class="category food">Food</span>
+                <div class="title editable-node">維多利亞街 & 點心</div>
+                <div class="info-grid">
+                    <div class="info-row"><b>SPOT 1</b> <span class="editable-node">Mary's Milk Bar (手工冰淇淋)</span></div>
+                    <div class="info-row"><b>SPOT 2</b> <span class="editable-node">Bertie's (炸魚薯條)</span></div>
+                </div>
+                <div class="details">
+                    <div class="point-speak">
+                        <div class="speak-row"><span class="cn">炸瑪氏巧克力棒</span><span class="en">Deep Fried Mars Bar</span></div>
+                        <div class="speak-row"><span class="cn">手工冰淇淋</span><span class="en">Handmade Gelato</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-header">Day 3: 5/7 (Thu) Palace & Hill</div>
+
+        <div class="card-wrapper">
+            <div class="drag-handle">⠿</div>
+            <div class="time-label editable-node">09:30</div>
+            <div class="card" onclick="toggleCard(this)">
+                <span class="category">Attraction</span>
+                <div class="title editable-node">荷里路德宮 (Palace of Holyroodhouse)</div>
+                <div class="info-grid">
+                    <div class="info-row"><b>TICKET</b> <span class="editable-node">£66 (已預約)</span></div>
+                    <div class="info-row"><b>AUDIO</b> <span class="editable-node">免費中文語音導覽</span></div>
+                </div>
+                <div class="details">
+                    <div class="guide-body editable-node">
+                        <section><h4>背景歷史</h4><p>英國君主在蘇格蘭的正式官邸，著名的蘇格蘭瑪麗女王曾居住於此。必看：瑪麗女王的寢宮與那段慘烈的謀殺案歷史地點。</p></section>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-wrapper">
+            <div class="drag-handle">⠿</div>
+            <div class="time-label editable-node">13:30 (等待回覆)</div>
+            <div class="card" onclick="toggleCard(this)">
+                <span class="category food">Food</span>
+                <div class="title editable-node">Arcade Bar Haggis & Whisky</div>
+                <div class="info-grid">
+                    <div class="info-row"><b>STATUS</b> <span class="editable-node">已寄信 13:30 預約</span></div>
+                </div>
+                <div class="details">
+                    <div class="point-speak">
+                        <div class="speak-row"><span class="cn">經典哈吉斯 (羊雜碎)</span><span class="en">Famous Haggis</span></div>
+                        <div class="speak-row"><span class="cn">威士忌拼盤</span><span class="en">Whisky Tasting Flight</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let isEditing = false;
+    const sortable = new Sortable(document.getElementById('itinerary-list'), {
+        handle: '.drag-handle', animation: 150, disabled: true
+    });
+
+    function toggleMode() {
+        isEditing = !isEditing;
+        document.body.className = isEditing ? 'edit-mode' : 'read-mode';
+        const btn = document.getElementById('lockBtn');
+        btn.innerText = isEditing ? "🔓 UNLOCK" : "🔒 LOCK";
+        btn.classList.toggle('unlocked');
+        sortable.option("disabled", !isEditing);
+        document.querySelectorAll('.editable-node').forEach(n => {
+            n.setAttribute('contenteditable', isEditing);
+            n.style.pointerEvents = isEditing ? "auto" : "none";
+        });
+    }
+
+    function toggleCard(card) {
+        if(!isEditing) {
+            card.closest('.card-wrapper').classList.toggle('open');
+        }
+    }
+</script>
+</body>
+</html>
